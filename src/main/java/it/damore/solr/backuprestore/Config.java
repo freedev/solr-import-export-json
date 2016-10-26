@@ -33,8 +33,10 @@ public class Config {
 
   }
   
+  private String filterQuery;
   private String solrUrl;
   private Boolean dryRun;
+  private Boolean deleteAll;
   private String fileName;
   private ActionType actionType;
   /**
@@ -93,12 +95,44 @@ public class Config {
     this.fileName = inputFileName;
   }
 
+  
+  /**
+   * @return the filterQuery
+   */
+  public String getFilterQuery() {
+    return filterQuery;
+  }
+
+  /**
+   * @param filterQuery the filterQuery to set
+   */
+  public void setFilterQuery(String filterQuery) {
+    this.filterQuery = filterQuery;
+  }
+
+  
+  /**
+   * @return the deleteAll
+   */
+  public Boolean getDeleteAll() {
+    return deleteAll;
+  }
+
+  /**
+   * @param deleteAll the deleteAll to set
+   */
+  public void setDeleteAll(Boolean deleteAll) {
+    this.deleteAll = deleteAll;
+  }
+
   /* (non-Javadoc)
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "Config [solrUrl=" + solrUrl + ", dryRun=" + dryRun + ", fileName=" + fileName + ", OutputType=" + actionType + "]";
+    return "Config [filterQuery=" + filterQuery + ", solrUrl=" + solrUrl + ", dryRun=" + dryRun + ", deleteAll="
+           + deleteAll + ", fileName=" + fileName + ", actionType=" + actionType + "]";
   }
+
   
 }
