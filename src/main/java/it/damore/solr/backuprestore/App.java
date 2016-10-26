@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
@@ -61,6 +62,7 @@ public class App {
   private static final String[] FILTER_QUERY = new String[] {"f", "filterQuery"};
   private static final String[] HELP         = new String[] {"h", "help"};
   private static final String[] DRY_RUN      = new String[] {"D", "dryRun"};
+  private static final String[] SKIP_FIELDS  = new String[] {"S", "skipFields"};
 
   private static Logger         logger       = LoggerFactory.getLogger(App.class);
   private static Config         config       = null;
@@ -78,8 +80,6 @@ public class App {
 
   public static void main(String[] args) throws IOException, ParseException, URISyntaxException {
 
-    DateFormat df = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:sss'Z'");
-    objectMapper.setDateFormat(df);
     config = getConfigFromArgs(args);
 
     logger.info("Found config: " + config);
@@ -175,7 +175,9 @@ public class App {
 
     String cursorMark = CursorMarkParams.CURSOR_MARK_START;
 
-    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+//    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+    DateFormat df = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:sss'Z'");
+    objectMapper.setDateFormat(df);
 
     QueryResponse r = client.query(solrQuery);
 
@@ -194,6 +196,7 @@ public class App {
           QueryResponse rsp = client.query(solrQuery);
           String nextCursorMark = rsp.getNextCursorMark();
           for (SolrDocument d : rsp.getResults()) {
+            config.getSkipFieldsSet().forEach(s -> d.removeFields(s));
             pw.write(objectMapper.writeValueAsString(d));
             pw.write("\n");
           }
@@ -219,6 +222,7 @@ public class App {
   private static Config getConfigFromArgs(String[] args) throws ParseException {
     CommandLine cmd = parseCommandLine(args);
     String solrUrl = cmd.getOptionValue(SOLR_URL[1]);
+    String skipFields = cmd.getOptionValue(SKIP_FIELDS[1]);
     String file = cmd.getOptionValue(OUTPUT[1]);
     String filterQuery = cmd.getOptionValue(FILTER_QUERY[1]);
     String deleteAll = cmd.getOptionValue(DELETE_ALL[1]);
@@ -236,6 +240,10 @@ public class App {
     Config c = new Config();
     c.setSolrUrl(solrUrl);
     c.setFileName(file);
+    
+    if (skipFields != null) {
+      c.setSkipFieldsSet(Pattern.compile(",").splitAsStream(skipFields).collect(Collectors.toSet()));
+    }
 
     for (ActionType o : ActionType.values()) {
       if (actionType.equalsIgnoreCase(o.toString())) {
@@ -274,6 +282,7 @@ public class App {
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before restore");
     cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during backup");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
+    cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true, "comma separated fields list to skip during backup/restore");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);

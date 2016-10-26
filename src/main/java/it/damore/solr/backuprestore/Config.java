@@ -4,7 +4,9 @@
 package it.damore.solr.backuprestore;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /*
@@ -51,12 +53,13 @@ public class Config {
 
   }
   
-  private String filterQuery;
-  private String solrUrl;
-  private Boolean dryRun;
-  private Boolean deleteAll;
-  private String fileName;
   private ActionType actionType;
+  private String solrUrl;
+  private String fileName;
+  private Boolean deleteAll;
+  private Set<String> skipFieldsSet = Collections.emptySet();
+  private String filterQuery;
+  private Boolean dryRun;
   /**
    * @return the solrUrl
    */
@@ -145,14 +148,28 @@ public class Config {
     this.deleteAll = deleteAll;
   }
 
+  /**
+   * @return the skipFieldsSet
+   */
+  public Set<String> getSkipFieldsSet() {
+    return skipFieldsSet;
+  }
+
+  /**
+   * @param skipFieldsSet the skipFieldsSet to set
+   */
+  public void setSkipFieldsSet(Set<String> skipFieldsSet) {
+    this.skipFieldsSet = skipFieldsSet;
+  }
+
   /* (non-Javadoc)
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "Config [filterQuery=" + filterQuery + ", solrUrl=" + solrUrl + ", dryRun=" + dryRun + ", deleteAll="
-           + deleteAll + ", fileName=" + fileName + ", actionType=" + actionType + "]";
+    return "Config [actionType=" + actionType + ", solrUrl=" + solrUrl + ", fileName=" + fileName + ", deleteAll="
+           + deleteAll + ", skipFieldsSet=" + skipFieldsSet + ", filterQuery=" + filterQuery + ", dryRun=" + dryRun
+           + "]";
   }
 
-  
 }
