@@ -21,20 +21,21 @@ enjoy :)
 ```
 
 
-With linux execute:
-```
+To execute this console app you need to satisfy few dependency (java 8, git, maven), if you are a java developer probably you already have everything, on the other hand if not if you have Linux execute the following commands:
 
+```
   sudo apt-get update
-  sudo apt-get remove openjdk-7-jdk
   sudo add-apt-repository ppa:openjdk-r/ppa
   sudo apt-get update
   sudo apt-get install openjdk-8-jdk
   sudo apt-get install maven
   
+  git clone https://github.com/freedev/solr-backup-restore-json.git
   cd solr-backup-restore-json
   mvn clean package
-
 ```
+
+Now you're ready to execute this little script.
 
 - backup all documents into a json file
 
