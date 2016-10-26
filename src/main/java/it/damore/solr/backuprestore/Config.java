@@ -68,31 +68,33 @@ public class Config {
   }
 
   /**
-   * @return the OutputType
+   * @return the ActionType
    */
   public ActionType getActionType() {
     return actionType;
   }
 
   /**
-   * @param OutputType the OutputType to set
+   * @param ActionType the ActionType to set
    */
   public void setActionType(ActionType actionType) {
     this.actionType = actionType;
   }
 
   /**
-   * @return the collectionName
+   * 
+   * @return
    */
   public String getFileName() {
     return fileName;
   }
 
   /**
-   * @param collectionName the collectionName to set
+   * 
+   * @param fileName
    */
-  public void setFileName(String inputFileName) {
-    this.fileName = inputFileName;
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
   }
 
   

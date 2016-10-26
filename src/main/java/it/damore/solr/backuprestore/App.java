@@ -39,31 +39,30 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import it.damore.solr.backuprestore.Config.ActionType;
 
 /**
- * Hello world!
+ * @author freedev
+ *
+ * Backups and restore a Solr collection
  */
 public class App {
 
-  private static final String[] SOLR_URL = new String[]{"s", "solrUrl"};
-  private static final String[] ACTION_TYPE = new String[]{"a", "actionType"};
-  private static final String[] OUTPUT = new String[]{"o", "output"};
-  private static final String[] DELETE_ALL = new String[]{"d", "deleteAll"};
-  private static final String[] FILTER_QUERY = new String[]{"f", "filterQuery"};
-  private static final String[] HELP = new String[]{"h", "help"};
-  private static final String[] DRY_RUN = new String[]{"D", "dryRun"};
-  
-  private static Logger       logger       = LoggerFactory.getLogger(App.class);
+  private static final String[] SOLR_URL     = new String[] {"s", "solrUrl"};
+  private static final String[] ACTION_TYPE  = new String[] {"a", "actionType"};
+  private static final String[] OUTPUT       = new String[] {"o", "output"};
+  private static final String[] DELETE_ALL   = new String[] {"d", "deleteAll"};
+  private static final String[] FILTER_QUERY = new String[] {"f", "filterQuery"};
+  private static final String[] HELP         = new String[] {"h", "help"};
+  private static final String[] DRY_RUN      = new String[] {"D", "dryRun"};
 
-  private static Config       config       = null;
-
-  private static ObjectMapper objectMapper = new ObjectMapper();
-
+  private static Logger         logger       = LoggerFactory.getLogger(App.class);
+  private static Config         config       = null;
+  private static ObjectMapper   objectMapper = new ObjectMapper();
 
   public static void main(String[] args) throws IOException, ParseException, URISyntaxException {
 
     DateFormat df = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:sss'Z'");
     objectMapper.setDateFormat(df);
     config = getConfigFromArgs(args);
-    
+
     logger.info("Found config: " + config);
 
     try (HttpSolrClient client = new HttpSolrClient(config.getSolrUrl())) {
@@ -72,12 +71,12 @@ public class App {
         switch (config.getActionType()) {
           case BACKUP:
 
-            readAllDocuments(client, getFile(config));
+            readAllDocuments(client, new File(config.getFileName()));
             break;
 
           case RESTORE:
 
-            writeAllDocuments(client, getFile(config));
+            writeAllDocuments(client, new File(config.getFileName()));
             break;
 
           default:
@@ -191,12 +190,12 @@ public class App {
 
   }
 
-
-  private static File getFile(Config config) {
-    return new File(config.getFileName());
-  }
-
-
+  /**
+   * read parameters from args 
+   * @param args
+   * @return Config 
+   * @throws ParseException
+   */
   private static Config getConfigFromArgs(String[] args) throws ParseException {
     CommandLine cmd = parseCommandLine(args);
     String solrUrl = cmd.getOptionValue(SOLR_URL[1]);
@@ -227,7 +226,7 @@ public class App {
     if (c.getActionType() == null) {
       throw new MissingArgumentException("actionType should be [" + String.join("|", ActionType.getNames()) + "]");
     }
-    
+
     c.setFilterQuery(filterQuery);
 
     c.setDeleteAll(deleteAll != null);
@@ -239,11 +238,17 @@ public class App {
     return c;
   }
 
-
+  /**
+   * Parse command line
+   * @param args
+   * @return
+   * @throws ParseException
+   */
   private static CommandLine parseCommandLine(String[] args) throws ParseException {
     Options cliOptions = new Options();
     cliOptions.addOption(SOLR_URL[0], SOLR_URL[1], true, "solr url");
-    cliOptions.addOption(ACTION_TYPE[0], ACTION_TYPE[1], true, "action type [" + String.join("|", ActionType.getNames()) + "]");
+    cliOptions.addOption(ACTION_TYPE[0], ACTION_TYPE[1], true,
+                         "action type [" + String.join("|", ActionType.getNames()) + "]");
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], true, "delete all documents before restore");
     cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during backup");
@@ -263,6 +268,5 @@ public class App {
 
     return cmd;
   }
-
 
 }
