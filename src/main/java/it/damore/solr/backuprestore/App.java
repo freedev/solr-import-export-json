@@ -92,6 +92,8 @@ public class App {
 
     client.deleteByQuery("*:*");
     
+    logger.info("Reading " + config.getFileName());
+    
     try (BufferedReader pw = new BufferedReader(new FileReader(outputFile))) {
       pw.lines().collect(StreamUtils.batchCollector(BATCH, l -> {
         List<SolrInputDocument> collect = l.stream().map(j -> { 
@@ -117,32 +119,7 @@ public class App {
     }
 
     client.commit();
-    
-//    
-//    IntStream.range(0, (l.size()+BATCH-1)/BATCH)
-//             .mapToObj(i -> l.subList(i*BATCH, Math.min(l.size(), (i+1)*BATCH)))
-//             .forEach(batch ->{
-//               List<SolrInputDocument> docs = batch.stream().map(entry -> { 
-//                 SolrInputDocument sid = new SolrInputDocument();
-//                 sid.addField("id", String.valueOf(entry.getKey().hashCode()));
-//                 sid.addField("suggestionKey", entry.getKey());
-//                 sid.addField("label", entry.getKey());
-//                 sid.addField("ranking_searchUniques", (float)entry.getValue());
-//                 return sid;
-//               }).collect(Collectors.toList());
-//               try {
-//                  client.add(docs);
-//                  client.commit();
-//                } catch (SolrServerException e) {
-//                  // TODO Auto-generated catch block
-//                  e.printStackTrace();
-//                } catch (IOException e) {
-//                  // TODO Auto-generated catch block
-//                  e.printStackTrace();
-//                }
-//             });
-
-    
+       
   }
 
   
@@ -157,13 +134,14 @@ public class App {
     String cursorMark = CursorMarkParams.CURSOR_MARK_START;
 
     objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-//    objectMapper.configure(SerializationFeature., false);
     
     QueryResponse r = client.query(solrQuery);
 
     logger.info("Found " + r.getResults().getNumFound() + " documents");
 
     if (!config.getDryRun()) {
+      logger.info("Creating " + config.getFileName());
+
       try (PrintWriter pw = new PrintWriter(outputFile)) {
         solrQuery.setRows(200);
         boolean done = false;
@@ -189,7 +167,6 @@ public class App {
   
   
   private static File getFile(Config config) {
-      logger.info("Creating " + config.getFileName());
       return new File(config.getFileName());
   }
 
