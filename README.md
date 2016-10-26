@@ -1,13 +1,14 @@
 # solr-backup-restore-json
 
-This is a simple command line application able to backup/restore a solr collection to/from a json file.
+## Backup or restore a Solr collection to/from a json file.
 
 enjoy :)
 
-- environment dependency: java 8 e maven
+### - environment dependency: java 8 e maven
 
 - list of parameters:
 
+```
  -a,--actionType <arg>    action type [backup|restore]
  -d,--deleteAll <arg>     delete all documents before restore
  -D,--dryRun              dry run test
@@ -15,11 +16,11 @@ enjoy :)
  -h,--help                help
  -o,--output <arg>        output file
  -s,--solrUrl <arg>       solr url
+```
 
 
 With linux execute:
 ```
-#!bash
 
   sudo apt-get update
   sudo apt-get remove openjdk-7-jdk
