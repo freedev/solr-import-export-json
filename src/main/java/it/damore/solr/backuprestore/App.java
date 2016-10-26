@@ -152,7 +152,6 @@ public class App {
     SolrQuery solrQuery = new SolrQuery();
     solrQuery.setQuery("*:*");
     solrQuery.setRows(0);
-    solrQuery.addFilterQuery("django_ct:videos.video");
     solrQuery.addSort("id", ORDER.asc); // Pay attention to this line
  
     String cursorMark = CursorMarkParams.CURSOR_MARK_START;
@@ -162,26 +161,28 @@ public class App {
     
     QueryResponse r = client.query(solrQuery);
 
-    logger.info("Found " + r.getResults().getNumFound() + " videos");
+    logger.info("Found " + r.getResults().getNumFound() + " documents");
 
-    try (PrintWriter pw = new PrintWriter(outputFile)) {
-      solrQuery.setRows(200);
-      boolean done = false;
-      while (!done) {
-        solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
-        QueryResponse rsp = client.query(solrQuery);
-        String nextCursorMark = rsp.getNextCursorMark();
-        for (SolrDocument d : rsp.getResults()) {
-          pw.write(objectMapper.writeValueAsString(d));
-          pw.write("\n");
-        }
-        if (cursorMark.equals(nextCursorMark)) {
-          done = true;
-        }
+    if (!config.getDryRun()) {
+      try (PrintWriter pw = new PrintWriter(outputFile)) {
+        solrQuery.setRows(200);
+        boolean done = false;
+        while (!done) {
+          solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
+          QueryResponse rsp = client.query(solrQuery);
+          String nextCursorMark = rsp.getNextCursorMark();
+          for (SolrDocument d : rsp.getResults()) {
+            pw.write(objectMapper.writeValueAsString(d));
+            pw.write("\n");
+          }
+          if (cursorMark.equals(nextCursorMark)) {
+            done = true;
+          }
 
-        cursorMark = nextCursorMark;
+          cursorMark = nextCursorMark;
+        }
+        
       }
-      
     }
     
   }
@@ -237,11 +238,9 @@ public class App {
     cliOptions.addOption("s", "solrUrl", true, "solr url");
     cliOptions.addOption("a", "actionType", true, "action type [" + String.join("|", ActionType.getNames())
     + "]");
-    cliOptions.addOption("w", "webSite", true, "web site url");
     cliOptions.addOption("f", "file", true, "file");
     cliOptions.addOption("d", "dryRun", false, "dryrun");
     cliOptions.addOption("h", "help", false, "help");
-    cliOptions.addOption("n", "sitemapSize", true, "size of current sitemap");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);
 
@@ -257,21 +256,5 @@ public class App {
     return cmd;
   }
 
-  // created_datetime seo_title seo_description thumbnail absolute_url
-
-
-  private static void addMediaContentFromTranscoding(String transcodings) {
-    if (transcodings != null) {
-      try {
-        Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();
-        map = objectMapper.readValue(transcodings, new TypeReference<Map<String, Map<String, String>>>(){});
-        
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        logger.error("error reading transcoding json:", e);
-      }
-
-    }
-  }
 
 }
