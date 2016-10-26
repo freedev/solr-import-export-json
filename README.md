@@ -4,22 +4,6 @@
 
 enjoy :)
 
-- environment dependency: java 8 e maven
-
-- list of command line parameters:
-
-```
-
- -a,--actionType <arg>    action type [backup|restore]
- -d,--deleteAll <arg>     delete all documents before restore
- -D,--dryRun              dry run test
- -f,--filterQuery <arg>   filter Query during backup
- -h,--help                help
- -o,--output <arg>        output file
- -s,--solrUrl <arg>       solr url
-
-```
-
 
 To execute this console app you need to satisfy few dependency (java 8, git, maven), if you are a java developer probably you already have everything, on the other hand if not if you have Linux execute the following commands:
 
@@ -36,6 +20,22 @@ To execute this console app you need to satisfy few dependency (java 8, git, mav
 ```
 
 Now you're ready to execute this little script.
+
+- This is the list of command line parameters:
+
+```
+
+ -a,--actionType <arg>    action type [backup|restore]
+ -d,--deleteAll <arg>     delete all documents before restore
+ -D,--dryRun              dry run test
+ -f,--filterQuery <arg>   filter Query during backup
+ -h,--help                help
+ -o,--output <arg>        output file
+ -s,--solrUrl <arg>       solr url
+
+```
+
+Here few real examples:
 
 - backup all documents into a json file
 
