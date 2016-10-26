@@ -18,6 +18,8 @@ With linux execute:
   sudo apt-cache search java | grep 8
   sudo apt-get install openjdk-8-jdk
   sudo apt-get install maven
+  
+  mvn clean package
 
 ```
 
@@ -30,11 +32,15 @@ With linux execute:
 
 ```
 
+- help
+
+  ./run.sh -h
+
 - backup 
 
 ```
 #!bash
-  ./run.sh http://localhost:8983/solr/collection backup /tmp/collection.json
+  ./run.sh -s http://localhost:8983/solr/collection -a backup -f /tmp/collection.json
 
 ```
 
@@ -42,6 +48,6 @@ With linux execute:
 
 ```
 #!bash
-  ./run.sh http://localhost:8983/solr/collection restore /tmp/collection.json
+  ./run.sh -s http://localhost:8983/solr/collection -a restore -f /tmp/collection.json
 
 ```

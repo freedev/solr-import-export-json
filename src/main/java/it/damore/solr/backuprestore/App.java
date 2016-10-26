@@ -245,7 +245,7 @@ public class App {
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);
 
-    if (cmd.hasOption("help")) {
+    if (cmd.hasOption("help") || cmd.hasOption("h")) {
       String header = "solr-backup-restore-json\n\n";
       String footer = "\nPlease report issues at https://github.com/freedev/solr-backup-restore-json";
 
