@@ -1,6 +1,6 @@
 # solr-backup-restore-json
 
-This is a simple command line application able to backup and restore a solr collection to and from a json file.
+This is a simple command line application able to backup/restore a solr collection to/from a json file.
 
 enjoy :)
 
