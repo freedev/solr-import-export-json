@@ -225,8 +225,8 @@ public class App {
     String skipFields = cmd.getOptionValue(SKIP_FIELDS[1]);
     String file = cmd.getOptionValue(OUTPUT[1]);
     String filterQuery = cmd.getOptionValue(FILTER_QUERY[1]);
-    String deleteAll = cmd.getOptionValue(DELETE_ALL[1]);
-    String dryRun = cmd.getOptionValue(DRY_RUN[1]);
+    Boolean deleteAll = cmd.hasOption(DELETE_ALL[1]);
+    Boolean dryRun = cmd.hasOption(DRY_RUN[1]);
     String actionType = cmd.getOptionValue(ACTION_TYPE[1]);
 
     if (actionType == null) {
@@ -257,9 +257,9 @@ public class App {
 
     c.setFilterQuery(filterQuery);
 
-    c.setDeleteAll(deleteAll != null);
+    c.setDeleteAll(deleteAll);
 
-    c.setDryRun(dryRun != null);
+    c.setDryRun(dryRun);
 
     logger.info("Current configuration " + c);
 
