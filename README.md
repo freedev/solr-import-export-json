@@ -29,6 +29,7 @@ Now you're ready to execute this little script.
  -d,--deleteAll <arg>     delete all documents before restore
  -D,--dryRun              dry run test
  -f,--filterQuery <arg>   filter Query during backup
+ -S,--skipFields          comma separated fields list to skip during backup/restore
  -h,--help                help
  -o,--output <arg>        output file
  -s,--solrUrl <arg>       solr url
