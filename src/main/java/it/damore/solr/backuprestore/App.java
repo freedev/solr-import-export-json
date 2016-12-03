@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -175,9 +176,12 @@ public class App {
 
     String cursorMark = CursorMarkParams.CURSOR_MARK_START;
 
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    
 //    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
     DateFormat df = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:sss'Z'");
     objectMapper.setDateFormat(df);
+    objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
     QueryResponse r = client.query(solrQuery);
 
