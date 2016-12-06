@@ -63,6 +63,7 @@ public class App {
   private static final String[] FILTER_QUERY = new String[] {"f", "filterQuery"};
   private static final String[] HELP         = new String[] {"h", "help"};
   private static final String[] DRY_RUN      = new String[] {"D", "dryRun"};
+  private static final String[] UNIQUE_ID    = new String[] {"i", "uniqueId"};
   private static final String[] SKIP_FIELDS  = new String[] {"S", "skipFields"};
 
   private static Logger         logger       = LoggerFactory.getLogger(App.class);
@@ -229,6 +230,7 @@ public class App {
     String skipFields = cmd.getOptionValue(SKIP_FIELDS[1]);
     String file = cmd.getOptionValue(OUTPUT[1]);
     String filterQuery = cmd.getOptionValue(FILTER_QUERY[1]);
+    String uniqueId = cmd.getOptionValue(UNIQUE_ID[1]);
     Boolean deleteAll = cmd.hasOption(DELETE_ALL[1]);
     Boolean dryRun = cmd.hasOption(DRY_RUN[1]);
     String actionType = cmd.getOptionValue(ACTION_TYPE[1]);
@@ -240,11 +242,18 @@ public class App {
     if (solrUrl == null) {
       throw new MissingArgumentException("solrUrl missing");
     }
-
+    
     Config c = new Config();
     c.setSolrUrl(solrUrl);
     c.setFileName(file);
-    
+
+    if (uniqueId != null) {
+      c.setUniqueId(uniqueId);
+    } else {
+      c.setUniqueId("Id");
+    }
+
+
     if (skipFields != null) {
       c.setSkipFieldsSet(Pattern.compile(",").splitAsStream(skipFields).collect(Collectors.toSet()));
     }
@@ -285,6 +294,7 @@ public class App {
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before restore");
     cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during backup");
+    cliOptions.addOption(UNIQUE_ID[0], UNIQUE_ID[1], true, "specify unique Id for deep paging");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
     cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true, "comma separated fields list to skip during backup/restore");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");

@@ -59,6 +59,7 @@ public class Config {
   private Boolean deleteAll;
   private Set<String> skipFieldsSet = Collections.emptySet();
   private String filterQuery;
+  private String uniqueId;
   private Boolean dryRun;
   /**
    * @return the solrUrl
@@ -160,6 +161,20 @@ public class Config {
    */
   public void setSkipFieldsSet(Set<String> skipFieldsSet) {
     this.skipFieldsSet = skipFieldsSet;
+  }
+
+  /**
+   * @return the uniqueId
+   */
+  public String getUniqueId() {
+    return uniqueId;
+  }
+
+  /**
+   * @param uniqueId the uniqueId to set
+   */
+  public void setUniqueId(String uniqueId) {
+    this.uniqueId = uniqueId;
   }
 
   /* (non-Javadoc)
