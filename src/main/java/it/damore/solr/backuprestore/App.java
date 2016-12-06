@@ -5,8 +5,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -34,7 +38,9 @@ import org.apache.solr.common.params.CursorMarkParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -63,7 +69,7 @@ public class App {
   private static final String[] FILTER_QUERY = new String[] {"f", "filterQuery"};
   private static final String[] HELP         = new String[] {"h", "help"};
   private static final String[] DRY_RUN      = new String[] {"D", "dryRun"};
-  private static final String[] UNIQUE_ID    = new String[] {"i", "uniqueId"};
+  private static final String[] UNIQUE_KEY    = new String[] {"k", "uniqueKey"};
   private static final String[] SKIP_FIELDS  = new String[] {"S", "skipFields"};
 
   private static Logger         logger       = LoggerFactory.getLogger(App.class);
@@ -85,6 +91,11 @@ public class App {
     config = getConfigFromArgs(args);
 
     logger.info("Found config: " + config);
+
+    if (config.getUniqueKey() == null) {
+      readUniqueKeyFromSolrSchema();
+    }
+
 
     try (HttpSolrClient client = new HttpSolrClient(config.getSolrUrl())) {
 
@@ -113,6 +124,28 @@ public class App {
       }
     }
 
+  }
+
+  private static void readUniqueKeyFromSolrSchema() throws IOException, JsonParseException, JsonMappingException,
+                                                    MalformedURLException {
+    String sUrl = config.getSolrUrl() + "/schema/uniquekey?wt=json";
+    Map<String, Object> uniqueKey = objectMapper.readValue(readUrl(sUrl), new TypeReference<Map<String, Object>>() {});
+    if (uniqueKey.containsKey("uniqueKey")) {
+      config.setUniqueKey((String)uniqueKey.get("uniqueKey"));
+    } else {
+      logger.warn("unable to find valid uniqueKey defaulting to \"id\".");
+    }
+  }
+
+  private static String readUrl(String sUrl) throws MalformedURLException, IOException {
+    StringBuilder sbJson = new StringBuilder();
+    URL url = new URL(sUrl);
+    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    String inputLine;
+    while ((inputLine = in.readLine()) != null)
+      sbJson.append(inputLine);
+    in.close();
+    return sbJson.toString();
   }
 
   private static SolrInputDocument json2SolrInputDocument(String j) {
@@ -173,13 +206,14 @@ public class App {
       solrQuery.addFilterQuery(config.getFilterQuery());
     }
     solrQuery.setRows(0);
-    solrQuery.addSort(config.getUniqueId(), ORDER.asc); // Pay attention to this line
+
+    solrQuery.addSort(config.getUniqueKey(), ORDER.asc); // Pay attention to this line
 
     String cursorMark = CursorMarkParams.CURSOR_MARK_START;
 
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    
-//    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+
+    // objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
     DateFormat df = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:sss'Z'");
     objectMapper.setDateFormat(df);
     objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
@@ -201,7 +235,8 @@ public class App {
           QueryResponse rsp = client.query(solrQuery);
           String nextCursorMark = rsp.getNextCursorMark();
           for (SolrDocument d : rsp.getResults()) {
-            config.getSkipFieldsSet().forEach(s -> d.removeFields(s));
+            config.getSkipFieldsSet()
+                  .forEach(s -> d.removeFields(s));
             pw.write(objectMapper.writeValueAsString(d));
             pw.write("\n");
           }
@@ -230,7 +265,7 @@ public class App {
     String skipFields = cmd.getOptionValue(SKIP_FIELDS[1]);
     String file = cmd.getOptionValue(OUTPUT[1]);
     String filterQuery = cmd.getOptionValue(FILTER_QUERY[1]);
-    String uniqueId = cmd.getOptionValue(UNIQUE_ID[1]);
+    String uniqueKey = cmd.getOptionValue(UNIQUE_KEY[1]);
     Boolean deleteAll = cmd.hasOption(DELETE_ALL[1]);
     Boolean dryRun = cmd.hasOption(DRY_RUN[1]);
     String actionType = cmd.getOptionValue(ACTION_TYPE[1]);
@@ -242,20 +277,20 @@ public class App {
     if (solrUrl == null) {
       throw new MissingArgumentException("solrUrl missing");
     }
-    
+
     Config c = new Config();
     c.setSolrUrl(solrUrl);
     c.setFileName(file);
 
-    if (uniqueId != null) {
-      c.setUniqueId(uniqueId);
-    } else {
-      c.setUniqueId("Id");
+    if (uniqueKey != null) {
+      c.setUniqueKey(uniqueKey);
     }
 
 
     if (skipFields != null) {
-      c.setSkipFieldsSet(Pattern.compile(",").splitAsStream(skipFields).collect(Collectors.toSet()));
+      c.setSkipFieldsSet(Pattern.compile(",")
+                                .splitAsStream(skipFields)
+                                .collect(Collectors.toSet()));
     }
 
     for (ActionType o : ActionType.values()) {
@@ -294,9 +329,10 @@ public class App {
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before restore");
     cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during backup");
-    cliOptions.addOption(UNIQUE_ID[0], UNIQUE_ID[1], true, "specify unique Id for deep paging");
+    cliOptions.addOption(UNIQUE_KEY[0], UNIQUE_KEY[1], true, "specify unique Id for deep paging");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
-    cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true, "comma separated fields list to skip during backup/restore");
+    cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true,
+                         "comma separated fields list to skip during backup/restore");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);

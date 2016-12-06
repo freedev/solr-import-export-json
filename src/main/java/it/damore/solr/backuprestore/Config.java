@@ -59,7 +59,7 @@ public class Config {
   private Boolean deleteAll;
   private Set<String> skipFieldsSet = Collections.emptySet();
   private String filterQuery;
-  private String uniqueId;
+  private String uniqueKey;
   private Boolean dryRun;
   /**
    * @return the solrUrl
@@ -166,15 +166,15 @@ public class Config {
   /**
    * @return the uniqueId
    */
-  public String getUniqueId() {
-    return uniqueId;
+  public String getUniqueKey() {
+    return uniqueKey;
   }
 
   /**
    * @param uniqueId the uniqueId to set
    */
-  public void setUniqueId(String uniqueId) {
-    this.uniqueId = uniqueId;
+  public void setUniqueKey(String uniqueId) {
+    this.uniqueKey = uniqueId;
   }
 
   /* (non-Javadoc)
@@ -183,8 +183,8 @@ public class Config {
   @Override
   public String toString() {
     return "Config [actionType=" + actionType + ", solrUrl=" + solrUrl + ", fileName=" + fileName + ", deleteAll="
-           + deleteAll + ", skipFieldsSet=" + skipFieldsSet + ", filterQuery=" + filterQuery + ", dryRun=" + dryRun
-           + "]";
+           + deleteAll + ", skipFieldsSet=" + skipFieldsSet + ", filterQuery=" + filterQuery + ", uniqueKey="
+           + uniqueKey + ", dryRun=" + dryRun + "]";
   }
 
 }
