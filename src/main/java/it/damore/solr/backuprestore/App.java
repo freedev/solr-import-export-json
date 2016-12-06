@@ -173,7 +173,7 @@ public class App {
       solrQuery.addFilterQuery(config.getFilterQuery());
     }
     solrQuery.setRows(0);
-    solrQuery.addSort("id", ORDER.asc); // Pay attention to this line
+    solrQuery.addSort(config.getUniqueId(), ORDER.asc); // Pay attention to this line
 
     String cursorMark = CursorMarkParams.CURSOR_MARK_START;
 
