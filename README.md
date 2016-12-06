@@ -26,13 +26,15 @@ Now you're ready to execute this little script.
 ```
 
  -a,--actionType <arg>    action type [backup|restore]
- -d,--deleteAll <arg>     delete all documents before restore
+ -d,--deleteAll           delete all documents before restore
  -D,--dryRun              dry run test
  -f,--filterQuery <arg>   filter Query during backup
- -S,--skipFields          comma separated fields list to skip during backup/restore
  -h,--help                help
+ -i,--uniqueId <arg>      specify unique Id for deep paging
  -o,--output <arg>        output file
  -s,--solrUrl <arg>       solr url
+ -S,--skipFields <arg>    comma separated fields list to skip during
+                          backup/restore
 
 ```
 
