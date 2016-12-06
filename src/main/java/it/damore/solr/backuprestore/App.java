@@ -329,7 +329,7 @@ public class App {
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before restore");
     cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during backup");
-    cliOptions.addOption(UNIQUE_KEY[0], UNIQUE_KEY[1], true, "specify unique Id for deep paging");
+    cliOptions.addOption(UNIQUE_KEY[0], UNIQUE_KEY[1], true, "specify unique key for deep paging");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
     cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true,
                          "comma separated fields list to skip during backup/restore");

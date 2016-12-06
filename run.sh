@@ -1,4 +1,11 @@
 #!/bin/bash
 
-mvn exec:java -Dexec.mainClass="it.damore.solr.backuprestore.App" -Dexec.args="$*"
+PARAMS="$*"
+
+if [ "A$PARAMS" == "A" ]
+then
+  PARAMS="--help"
+fi
+
+mvn exec:java -Dexec.mainClass="it.damore.solr.backuprestore.App" -Dexec.args="$PARAMS"
 
