@@ -24,8 +24,8 @@ Now you're ready to execute this little script.
 - This is the list of command line parameters:
 
 ```
-	usage: myapp \[-a <arg>\] \[-d\] \[-D\] \[-f <arg>\] \[-h\] \[-k <arg>\] \[-o <arg>\]
-	       \[-s <arg>\] \[-S <arg>\]
+	usage: ./run.sh [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
+	       [-s <arg>] [-S <arg>]
 	solr-backup-restore-json
 	
 	 -a,--actionType <arg>    action type [backup|restore]
