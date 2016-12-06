@@ -23,20 +23,20 @@ Now you're ready to execute this little script.
 
 - This is the list of command line parameters:
 
-```
-
- -a,--actionType <arg>    action type [backup|restore]
- -d,--deleteAll           delete all documents before restore
- -D,--dryRun              dry run test
- -f,--filterQuery <arg>   filter Query during backup
- -h,--help                help
- -i,--uniqueId <arg>      specify unique Id for deep paging
- -o,--output <arg>        output file
- -s,--solrUrl <arg>       solr url
- -S,--skipFields <arg>    comma separated fields list to skip during
-                          backup/restore
-
-```
+	usage: myapp \[-a <arg>\] \[-d\] \[-D\] \[-f <arg>\] \[-h\] \[-k <arg>\] \[-o <arg>\]
+	       \[-s <arg>\] \[-S <arg>\]
+	solr-backup-restore-json
+	
+	 -a,--actionType <arg>    action type [backup|restore]
+	 -d,--deleteAll           delete all documents before restore
+	 -D,--dryRun              dry run test
+	 -f,--filterQuery <arg>   filter Query during backup
+	 -h,--help                help
+	 -k,--uniqueKey <arg>     specify unique key for deep paging
+	 -o,--output <arg>        output file
+	 -s,--solrUrl <arg>       solr url
+	 -S,--skipFields <arg>    comma separated fields list to skip during
+	                          backup/restore
 
 Here few real examples:
 
