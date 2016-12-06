@@ -23,6 +23,7 @@ Now you're ready to execute this little script.
 
 - This is the list of command line parameters:
 
+```
 	usage: myapp \[-a <arg>\] \[-d\] \[-D\] \[-f <arg>\] \[-h\] \[-k <arg>\] \[-o <arg>\]
 	       \[-s <arg>\] \[-S <arg>\]
 	solr-backup-restore-json
@@ -37,6 +38,7 @@ Now you're ready to execute this little script.
 	 -s,--solrUrl <arg>       solr url
 	 -S,--skipFields <arg>    comma separated fields list to skip during
 	                          backup/restore
+```
 
 Here few real examples:
 
