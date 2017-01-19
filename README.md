@@ -24,19 +24,24 @@ Now you're ready to execute this little script.
 - This is the list of command line parameters:
 
 ```
-	usage: ./run.sh [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
-	       [-s <arg>] [-S <arg>]
-	solr-import-export-json
-	
-	 -a,--actionType <arg>    action type [backup|restore|import|export]
-	 -d,--deleteAll           delete all documents before import
-	 -D,--dryRun              dry run test
-	 -f,--filterQuery <arg>   filter Query during export
-	 -h,--help                help
-	 -k,--uniqueKey <arg>     specify unique key for deep paging
-	 -o,--output <arg>        output file
-	 -s,--solrUrl <arg>       solr url
-	 -S,--skipFields <arg>    comma separated fields list to skip during export/import, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*.
+usage: myapp [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
+       [-s <arg>] [-S <arg>]
+solr-import-export-json
+
+ -a,--actionType <arg>    action type [import|export|backup|restore]
+ -d,--deleteAll           delete all documents before import
+ -D,--dryRun              dry run test
+ -f,--filterQuery <arg>   filter Query during export
+ -h,--help                help
+ -k,--uniqueKey <arg>     specify unique key for deep paging
+ -o,--output <arg>        output file
+ -s,--solrUrl <arg>       solr url
+ -S,--skipFields <arg>    comma separated fields list to skip during
+                          export/import, this field accepts start and end
+                          wildcard *. So you can specify skip all fields
+                          starting with name_*
+
+Please report issues at https://github.com/freedev/solr-import-export-json
 ```
 
 Here few real examples:
