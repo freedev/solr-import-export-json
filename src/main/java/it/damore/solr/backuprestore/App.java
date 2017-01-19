@@ -375,7 +375,7 @@ public class App {
     cliOptions.addOption(UNIQUE_KEY[0], UNIQUE_KEY[1], true, "specify unique key for deep paging");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
     cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true,
-                         "comma separated fields list to skip during backup/restore");
+                         "comma separated fields list to skip during backup/restore, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);
