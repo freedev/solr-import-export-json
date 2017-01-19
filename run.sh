@@ -7,5 +7,5 @@ then
   PARAMS="--help"
 fi
 
-mvn exec:java -Dexec.mainClass="it.damore.solr.backuprestore.App" -Dexec.args="$PARAMS"
+mvn exec:java -Dexec.mainClass="it.damore.solr.importexport.App" -Dexec.args="$PARAMS"
 

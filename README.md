@@ -1,6 +1,6 @@
-### solr-backup-restore-json
+### solr-import-export-json
 
-# Backup or restore a Solr collection to/from a json file.
+# Import/Export (or Restore/Backup) a Solr collection from/to a json file.
 
 enjoy :)
 
@@ -14,8 +14,8 @@ To execute this console app you need to satisfy few dependency (java 8, git, mav
   sudo apt-get install openjdk-8-jdk
   sudo apt-get install maven
   
-  git clone https://github.com/freedev/solr-backup-restore-json.git
-  cd solr-backup-restore-json
+  git clone https://github.com/freedev/solr-import-export-json.git
+  cd solr-import-export-json
   mvn clean package
 ```
 
@@ -26,49 +26,49 @@ Now you're ready to execute this little script.
 ```
 	usage: ./run.sh [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
 	       [-s <arg>] [-S <arg>]
-	solr-backup-restore-json
+	solr-import-export-json
 	
-	 -a,--actionType <arg>    action type [backup|restore]
-	 -d,--deleteAll           delete all documents before restore
+	 -a,--actionType <arg>    action type [backup|restore|import|export]
+	 -d,--deleteAll           delete all documents before import
 	 -D,--dryRun              dry run test
-	 -f,--filterQuery <arg>   filter Query during backup
+	 -f,--filterQuery <arg>   filter Query during export
 	 -h,--help                help
 	 -k,--uniqueKey <arg>     specify unique key for deep paging
 	 -o,--output <arg>        output file
 	 -s,--solrUrl <arg>       solr url
-	 -S,--skipFields <arg>    comma separated fields list to skip during backup/restore, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*.
+	 -S,--skipFields <arg>    comma separated fields list to skip during export/import, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*.
 ```
 
 Here few real examples:
 
-- backup all documents into a json file
+- export all documents into a json file
 
 ```
 #!bash
-  ./run.sh -s http://localhost:8983/solr/collection -a backup -o /tmp/collection.json
+  ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json
 
 ```
 
-- restore documents from json
-
-```
-#!bash
-  ./run.sh -s http://localhost:8983/solr/collection -a restore -o /tmp/collection.json 
-
-```
-
-- backup filtering documents, same as fq Solr parameter
+- import documents from json
 
 ```
 #!bash
-  ./run.sh -s http://localhost:8983/solr/collection -a backup -o /tmp/collection.json --filterQuery field:value
+  ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json 
 
 ```
 
-- restore documents from json but first delete all documents
+- export filtering documents, same as fq Solr parameter
 
 ```
 #!bash
-  ./run.sh -s http://localhost:8983/solr/collection -a restore -o /tmp/collection.json --deleteAll
+  ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --filterQuery field:value
+
+```
+
+- import documents from json but first delete all documents
+
+```
+#!bash
+  ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json --deleteAll
 
 ```

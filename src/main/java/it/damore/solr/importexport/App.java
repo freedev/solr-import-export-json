@@ -1,4 +1,4 @@
-package it.damore.solr.backuprestore;
+package it.damore.solr.importexport;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,24 +44,24 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import it.damore.solr.backuprestore.config.Config;
-import it.damore.solr.backuprestore.config.Config.ActionType;
-import it.damore.solr.backuprestore.config.SkipField;
-import it.damore.solr.backuprestore.config.SkipField.MatchType;
+import it.damore.solr.importexport.config.Config;
+import it.damore.solr.importexport.config.SkipField;
+import it.damore.solr.importexport.config.Config.ActionType;
+import it.damore.solr.importexport.config.SkipField.MatchType;
 
 /*
- * This file is part of solr-backup-restore-json. solr-backup-restore-json is free software: you can redistribute it
+ * This file is part of solr-import-export-json. solr-import-export-json is free software: you can redistribute it
  * and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
- * either version 3 of the License, or (at your option) any later version. solr-backup-restore-json is distributed in
+ * either version 3 of the License, or (at your option) any later version. solr-import-export-json is distributed in
  * the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a
- * copy of the GNU General Public License along with solr-backup-restore-json. If not, see
+ * copy of the GNU General Public License along with solr-import-export-json. If not, see
  * <http://www.gnu.org/licenses/>.
  */
 
 
 /**
- * @author freedev Backups and restore a Solr collection
+ * @author freedev Import and Export of a Solr collection
  */
 public class App {
 
@@ -104,12 +104,14 @@ public class App {
 
       try {
         switch (config.getActionType()) {
+          case EXPORT:
           case BACKUP:
 
             readAllDocuments(client, new File(config.getFileName()));
             break;
 
           case RESTORE:
+          case IMPORT:
 
             writeAllDocuments(client, new File(config.getFileName()));
             break;
@@ -370,19 +372,19 @@ public class App {
     cliOptions.addOption(ACTION_TYPE[0], ACTION_TYPE[1], true,
                          "action type [" + String.join("|", ActionType.getNames()) + "]");
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
-    cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before restore");
-    cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during backup");
+    cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before import");
+    cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during export");
     cliOptions.addOption(UNIQUE_KEY[0], UNIQUE_KEY[1], true, "specify unique key for deep paging");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
     cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true,
-                         "comma separated fields list to skip during backup/restore, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*");
+                         "comma separated fields list to skip during export/import, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);
 
     if (cmd.hasOption("help") || cmd.hasOption("h")) {
-      String header = "solr-backup-restore-json\n\n";
-      String footer = "\nPlease report issues at https://github.com/freedev/solr-backup-restore-json";
+      String header = "solr-import-export-json\n\n";
+      String footer = "\nPlease report issues at https://github.com/freedev/solr-import-export-json";
 
       HelpFormatter formatter = new HelpFormatter();
       formatter.printHelp("myapp", header, cliOptions, footer, true);

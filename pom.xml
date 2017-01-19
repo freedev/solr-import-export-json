@@ -3,11 +3,11 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>it.damore.solr</groupId>
-   <artifactId>backup-restore</artifactId>
+   <artifactId>import-export</artifactId>
    <version>1.0</version>
    <packaging>jar</packaging>
 
-   <name>backup-restore</name>
+   <name>import-export</name>
    <url>http://maven.apache.org</url>
 
    <properties>

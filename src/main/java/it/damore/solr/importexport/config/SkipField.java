@@ -1,4 +1,4 @@
-package it.damore.solr.backuprestore.config;
+package it.damore.solr.importexport.config;
 
 public class SkipField {
   

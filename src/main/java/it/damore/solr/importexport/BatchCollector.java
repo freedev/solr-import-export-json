@@ -1,4 +1,4 @@
-package it.damore.solr.backuprestore;
+package it.damore.solr.importexport;
 
 
 import java.util.ArrayList;
@@ -11,20 +11,20 @@ import java.util.stream.Collector;
 import static java.util.Objects.requireNonNull;
 
 /*
-This file is part of solr-backup-restore-json.
+This file is part of solr-import-export-json.
 
-solr-backup-restore-json is free software: you can redistribute it and/or modify
+solr-import-export-json is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-solr-backup-restore-json is distributed in the hope that it will be useful,
+solr-import-export-json is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with solr-backup-restore-json.  If not, see <http://www.gnu.org/licenses/>.
+along with solr-import-export-json.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
