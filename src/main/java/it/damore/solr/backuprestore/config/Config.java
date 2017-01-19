@@ -1,7 +1,7 @@
 /**
  * 
  */
-package it.damore.solr.backuprestore;
+package it.damore.solr.backuprestore.config;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,7 +57,7 @@ public class Config {
   private String solrUrl;
   private String fileName;
   private Boolean deleteAll;
-  private Set<String> skipFieldsSet = Collections.emptySet();
+  private Set<SkipField> skipFieldsSet = Collections.emptySet();
   private String filterQuery;
   private String uniqueKey;
   private Boolean dryRun;
@@ -152,14 +152,14 @@ public class Config {
   /**
    * @return the skipFieldsSet
    */
-  public Set<String> getSkipFieldsSet() {
+  public Set<SkipField> getSkipFieldsSet() {
     return skipFieldsSet;
   }
 
   /**
    * @param skipFieldsSet the skipFieldsSet to set
    */
-  public void setSkipFieldsSet(Set<String> skipFieldsSet) {
+  public void setSkipFieldsSet(Set<SkipField> skipFieldsSet) {
     this.skipFieldsSet = skipFieldsSet;
   }
 

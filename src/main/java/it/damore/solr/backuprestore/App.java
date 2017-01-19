@@ -10,12 +10,12 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,7 +44,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import it.damore.solr.backuprestore.Config.ActionType;
+import it.damore.solr.backuprestore.config.Config;
+import it.damore.solr.backuprestore.config.Config.ActionType;
+import it.damore.solr.backuprestore.config.SkipField;
+import it.damore.solr.backuprestore.config.SkipField.MatchType;
 
 /*
  * This file is part of solr-backup-restore-json. solr-backup-restore-json is free software: you can redistribute it
@@ -69,7 +72,7 @@ public class App {
   private static final String[] FILTER_QUERY = new String[] {"f", "filterQuery"};
   private static final String[] HELP         = new String[] {"h", "help"};
   private static final String[] DRY_RUN      = new String[] {"D", "dryRun"};
-  private static final String[] UNIQUE_KEY    = new String[] {"k", "uniqueKey"};
+  private static final String[] UNIQUE_KEY   = new String[] {"k", "uniqueKey"};
   private static final String[] SKIP_FIELDS  = new String[] {"S", "skipFields"};
 
   private static Logger         logger       = LoggerFactory.getLogger(App.class);
@@ -131,7 +134,7 @@ public class App {
     String sUrl = config.getSolrUrl() + "/schema/uniquekey?wt=json";
     Map<String, Object> uniqueKey = objectMapper.readValue(readUrl(sUrl), new TypeReference<Map<String, Object>>() {});
     if (uniqueKey.containsKey("uniqueKey")) {
-      config.setUniqueKey((String)uniqueKey.get("uniqueKey"));
+      config.setUniqueKey((String) uniqueKey.get("uniqueKey"));
     } else {
       logger.warn("unable to find valid uniqueKey defaulting to \"id\".");
     }
@@ -227,6 +230,19 @@ public class App {
     if (!config.getDryRun()) {
       logger.info("Creating " + config.getFileName());
 
+      Set<SkipField> skipFieldsEquals = config.getSkipFieldsSet()
+                                              .stream()
+                                              .filter(s -> s.getMatch() == MatchType.EQUAL)
+                                              .collect(Collectors.toSet());
+      Set<SkipField> skipFieldsStartWith = config.getSkipFieldsSet()
+                                                 .stream()
+                                                 .filter(s -> s.getMatch() == MatchType.STARTS_WITH)
+                                                 .collect(Collectors.toSet());
+      Set<SkipField> skipFieldsEndWith = config.getSkipFieldsSet()
+                                               .stream()
+                                               .filter(s -> s.getMatch() == MatchType.ENDS_WITH)
+                                               .collect(Collectors.toSet());
+
       try (PrintWriter pw = new PrintWriter(outputFile)) {
         solrQuery.setRows(200);
         boolean done = false;
@@ -234,10 +250,27 @@ public class App {
           solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
           QueryResponse rsp = client.query(solrQuery);
           String nextCursorMark = rsp.getNextCursorMark();
+
           for (SolrDocument d : rsp.getResults()) {
-            config.getSkipFieldsSet()
-                  .forEach(s -> d.removeFields(s));
-            pw.write(objectMapper.writeValueAsString(d));
+            skipFieldsEquals.forEach(f -> d.removeFields(f.getText()));
+            if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
+              Map<String, Object> collect = d.entrySet()
+                                                    .stream()
+                                                    .filter(e -> !skipFieldsStartWith.stream()
+                                                                                     .filter(f -> e.getKey()
+                                                                                                   .startsWith(f.getText()))
+                                                                                     .findFirst()
+                                                                                     .isPresent())
+                                                    .filter(e -> !skipFieldsEndWith.stream()
+                                                                                   .filter(f -> e.getKey()
+                                                                                                 .endsWith(f.getText()))
+                                                                                   .findFirst()
+                                                                                   .isPresent())
+                                                    .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+              pw.write(objectMapper.writeValueAsString(collect));
+            } else {
+              pw.write(objectMapper.writeValueAsString(d));
+            }
             pw.write("\n");
           }
           if (cursorMark.equals(nextCursorMark)) {
@@ -290,6 +323,16 @@ public class App {
     if (skipFields != null) {
       c.setSkipFieldsSet(Pattern.compile(",")
                                 .splitAsStream(skipFields)
+                                .map(String::trim)
+                                .filter(s -> !s.equals("*"))
+                                .map(s -> {
+                                  if (s.startsWith("*")) {
+                                    return new SkipField(s.substring(1), MatchType.ENDS_WITH);
+                                  } else if (s.endsWith("*")) {
+                                    return new SkipField(s.substring(0, s.length() - 1), MatchType.STARTS_WITH);
+                                  } else
+                                    return new SkipField(s, MatchType.EQUAL);
+                                })
                                 .collect(Collectors.toSet()));
     }
 
