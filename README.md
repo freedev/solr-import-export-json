@@ -36,8 +36,7 @@ Now you're ready to execute this little script.
 	 -k,--uniqueKey <arg>     specify unique key for deep paging
 	 -o,--output <arg>        output file
 	 -s,--solrUrl <arg>       solr url
-	 -S,--skipFields <arg>    comma separated fields list to skip during
-	                          backup/restore
+	 -S,--skipFields <arg>    comma separated fields list to skip during backup/restore, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*.
 ```
 
 Here few real examples:
