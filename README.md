@@ -42,7 +42,8 @@ Now you're ready to execute this little script.
                               wildcard *. So you can specify skip all fields
                               starting with name_*
 
-Please report issues at https://github.com/freedev/solr-import-export-json
+
+
 
 ### Real life examples
 
@@ -74,4 +75,3 @@ Here few real examples:
 
      #!bash
      ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --skipFields field1_a,field2_*,*_date
-    
