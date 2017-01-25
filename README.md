@@ -2,7 +2,7 @@
 
 # Import/Export (or Restore/Backup) a Solr collection from/to a json file.
 
-As the title states, this little project will help you to save your collection in json format and restore them where and when you need.
+As the title states, this little project will help you to save your collection in json format and restore it where and when you need.
 
 Please report issues at https://github.com/freedev/solr-import-export-json/issues
 
