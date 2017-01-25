@@ -2,7 +2,9 @@
 
 # Import/Export (or Restore/Backup) a Solr collection from/to a json file.
 
-enjoy :)
+As the title states, this little project will help you to save your collection in json format and restore them where and when you need.
+
+Please report issues at https://github.com/freedev/solr-import-export-json/issues
 
 ### Install
 
@@ -18,13 +20,11 @@ To execute this console app you need to satisfy few dependency (java 8, git, mav
     cd solr-import-export-json
     mvn clean package
 
-Now you're ready to execute this little script.
+Now you're ready.
 
 ### How to use it
 
 This is the list of command line parameters.
-
-Please report issues at https://github.com/freedev/solr-import-export-json
 
 
      usage: myapp [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
@@ -53,7 +53,6 @@ export all documents into a json file
 
     ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json
 
-
 import documents from json
 
     ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json 
@@ -66,6 +65,6 @@ import documents from json but first delete all documents in the collection
 
      ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json --deleteAll
 
-export the documents and skip few fields. In the example the will be skipped the fields: `field1_a`, all the fields starting with `field2_` and all the fields ending with `_date`
+export documents and skip few fields. In the example the will be skipped the fields: `field1_a`, all the fields starting with `field2_` and all the fields ending with `_date`
 
      ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --skipFields field1_a,field2_*,*_date
