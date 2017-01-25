@@ -4,6 +4,7 @@
 
 enjoy :)
 
+### Install
 
 To execute this console app you need to satisfy few dependency (java 8, git, maven), if you are a java developer probably you already have everything, on the other hand if not if you have Linux execute the following commands:
 
@@ -18,6 +19,8 @@ To execute this console app you need to satisfy few dependency (java 8, git, mav
     mvn clean package
 
 Now you're ready to execute this little script.
+
+### How to use it
 
 - This is the list of command line parameters:
 <br>
@@ -40,6 +43,8 @@ Now you're ready to execute this little script.
                               starting with name_*
 
 Please report issues at https://github.com/freedev/solr-import-export-json
+
+### Real life examples
 
 Here few real examples:
 
