@@ -22,8 +22,10 @@ Now you're ready to execute this little script.
 
 ### How to use it
 
-- This is the list of command line parameters:
-<br>
+This is the list of command line parameters.
+
+Please report issues at https://github.com/freedev/solr-import-export-json
+
 
      usage: myapp [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
         [-s <arg>] [-S <arg>]
