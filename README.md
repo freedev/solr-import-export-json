@@ -51,27 +51,21 @@ Here few real examples:
 
 - export all documents into a json file
 
-
-    #!bash
     ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json
 
 
 - import documents from json
 
-     #!bash
     ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json 
 
 - export part of documents, like adding a `fq`  Solr parameter to the export
 
-     #!bash
      ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --filterQuery field:value
 
 - import documents from json but first delete all documents in the collection
 
-     #!bash
      ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json --deleteAll
 
 - export the documents and skip few fields. In the example the will be skipped the fields: `field1_a`, all the fields starting with `field2_` and all the fields ending with `_date`
 
-     #!bash
      ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --skipFields field1_a,field2_*,*_date
