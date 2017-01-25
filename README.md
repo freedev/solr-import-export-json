@@ -49,25 +49,23 @@ Please report issues at https://github.com/freedev/solr-import-export-json
 
 ### Real life examples
 
-Here few real examples:
-
-- export all documents into a json file
+export all documents into a json file
 
     ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json
 
 
-- import documents from json
+import documents from json
 
     ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json 
 
-- export part of documents, like adding a `fq`  Solr parameter to the export
+export part of documents, like adding a `fq`  Solr parameter to the export
 
      ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --filterQuery field:value
 
-- import documents from json but first delete all documents in the collection
+import documents from json but first delete all documents in the collection
 
      ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json --deleteAll
 
-- export the documents and skip few fields. In the example the will be skipped the fields: `field1_a`, all the fields starting with `field2_` and all the fields ending with `_date`
+export the documents and skip few fields. In the example the will be skipped the fields: `field1_a`, all the fields starting with `field2_` and all the fields ending with `_date`
 
      ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --skipFields field1_a,field2_*,*_date
