@@ -20,7 +20,7 @@ To execute this console app you need to satisfy few dependency (java 8, git, mav
 Now you're ready to execute this little script.
 
 - This is the list of command line parameters:
-
+<br>
 
      usage: myapp [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
         [-s <arg>] [-S <arg>]
@@ -38,7 +38,6 @@ Now you're ready to execute this little script.
                               export/import, this field accepts start and end
                               wildcard *. So you can specify skip all fields
                               starting with name_*
-
 
 Please report issues at https://github.com/freedev/solr-import-export-json
 
