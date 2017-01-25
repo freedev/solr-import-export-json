@@ -44,8 +44,10 @@ Here few real examples:
 
 - export all documents into a json file
 
+
     #!bash
     ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json
+
 
 - import documents from json
 
