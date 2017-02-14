@@ -31,7 +31,7 @@ along with solr-import-export-json.  If not, see <http://www.gnu.org/licenses/>.
  * @author freedev
  *
  */
-public class Config {
+public class CommandLineConfig {
 
   public enum ActionType {
     IMPORT("import"),
@@ -63,6 +63,7 @@ public class Config {
   private String filterQuery;
   private String uniqueKey;
   private Boolean dryRun;
+  private int blockSize = 200;
   /**
    * @return the solrUrl
    */
@@ -177,6 +178,21 @@ public class Config {
    */
   public void setUniqueKey(String uniqueId) {
     this.uniqueKey = uniqueId;
+  }
+
+  
+  /**
+   * @return the blockSize
+   */
+  public int getBlockSize() {
+    return blockSize;
+  }
+
+  /**
+   * @param blockSize the blockSize to set
+   */
+  public void setBlockSize(int blockSize) {
+    this.blockSize = blockSize;
   }
 
   /* (non-Javadoc)
