@@ -55,6 +55,8 @@ public class CommandLineConfig {
 
   }
   
+  public static final int DEFAULT_BLOCK_SIZE = 500;
+  
   private ActionType actionType;
   private String solrUrl;
   private String fileName;
@@ -63,7 +65,7 @@ public class CommandLineConfig {
   private String filterQuery;
   private String uniqueKey;
   private Boolean dryRun;
-  private int blockSize = 200;
+  private int blockSize = DEFAULT_BLOCK_SIZE;
   /**
    * @return the solrUrl
    */

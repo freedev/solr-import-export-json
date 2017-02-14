@@ -1,4 +1,4 @@
-package it.damore.solr.importexport;
+package it.damore.solr.importexport.config;
 
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -13,8 +13,6 @@ import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import it.damore.solr.importexport.config.CommandLineConfig;
-import it.damore.solr.importexport.config.SkipField;
 import it.damore.solr.importexport.config.CommandLineConfig.ActionType;
 import it.damore.solr.importexport.config.SkipField.MatchType;
 
@@ -130,6 +128,8 @@ public class ConfigFactory {
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
     cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true,
                          "comma separated fields list to skip during export/import, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*");
+    cliOptions.addOption(BLOCK_SIZE[0], BLOCK_SIZE[1], true,
+                         "block size (default " + CommandLineConfig.DEFAULT_BLOCK_SIZE + " documents)");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);

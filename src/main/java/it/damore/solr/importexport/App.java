@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import it.damore.solr.importexport.config.CommandLineConfig;
+import it.damore.solr.importexport.config.ConfigFactory;
 import it.damore.solr.importexport.config.SkipField;
 import it.damore.solr.importexport.config.SkipField.MatchType;
 
