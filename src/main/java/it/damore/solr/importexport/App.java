@@ -10,8 +10,10 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,7 +54,6 @@ import it.damore.solr.importexport.config.SkipField.MatchType;
  * <http://www.gnu.org/licenses/>.
  */
 
-
 /**
  * @author freedev Import and Export of a Solr collection
  */
@@ -63,9 +64,13 @@ public class App {
   private static ObjectMapper      objectMapper = new ObjectMapper();
   private static long              counter;
 
+  private static Set<SkipField> skipFieldsEquals;
+  private static Set<SkipField> skipFieldsStartWith;
+  private static Set<SkipField> skipFieldsEndWith;
 
   /**
-   * @param counter the counter to set
+   * @param counter
+   *          the counter to set
    */
   public static long incrementCounter(long counter) {
     App.counter += counter;
@@ -76,33 +81,44 @@ public class App {
 
     config = ConfigFactory.getConfigFromArgs(args);
 
+    skipFieldsEquals = config.getSkipFieldsSet()
+                             .stream()
+                             .filter(s -> s.getMatch() == MatchType.EQUAL)
+                             .collect(Collectors.toSet());
+    skipFieldsStartWith = config.getSkipFieldsSet()
+                                .stream()
+                                .filter(s -> s.getMatch() == MatchType.STARTS_WITH)
+                                .collect(Collectors.toSet());
+    skipFieldsEndWith = config.getSkipFieldsSet()
+                              .stream()
+                              .filter(s -> s.getMatch() == MatchType.ENDS_WITH)
+                              .collect(Collectors.toSet());
+
     logger.info("Found config: " + config);
 
     if (config.getUniqueKey() == null) {
       readUniqueKeyFromSolrSchema();
     }
 
-
     try (HttpSolrClient client = new HttpSolrClient(config.getSolrUrl())) {
 
       try {
         switch (config.getActionType()) {
-          case EXPORT:
-          case BACKUP:
+        case EXPORT:
+        case BACKUP:
 
-            readAllDocuments(client, new File(config.getFileName()));
-            break;
+          readAllDocuments(client, new File(config.getFileName()));
+          break;
 
-          case RESTORE:
-          case IMPORT:
+        case RESTORE:
+        case IMPORT:
 
-            writeAllDocuments(client, new File(config.getFileName()));
-            break;
+          writeAllDocuments(client, new File(config.getFileName()));
+          break;
 
-          default:
-            throw new RuntimeException("unsupported sitemap type");
+        default:
+          throw new RuntimeException("unsupported sitemap type");
         }
-
 
         logger.info("Build complete.");
 
@@ -121,10 +137,10 @@ public class App {
    * @throws MalformedURLException
    */
 
-  private static void readUniqueKeyFromSolrSchema() throws IOException, JsonParseException, JsonMappingException,
-                                                    MalformedURLException {
+  private static void readUniqueKeyFromSolrSchema() throws IOException, JsonParseException, JsonMappingException, MalformedURLException {
     String sUrl = config.getSolrUrl() + "/schema/uniquekey?wt=json";
-    Map<String, Object> uniqueKey = objectMapper.readValue(readUrl(sUrl), new TypeReference<Map<String, Object>>() {});
+    Map<String, Object> uniqueKey = objectMapper.readValue(readUrl(sUrl), new TypeReference<Map<String, Object>>() {
+    });
     if (uniqueKey.containsKey("uniqueKey")) {
       config.setUniqueKey((String) uniqueKey.get("uniqueKey"));
     } else {
@@ -141,7 +157,15 @@ public class App {
   private static String readUrl(String sUrl) throws MalformedURLException, IOException {
     StringBuilder sbJson = new StringBuilder();
     URL url = new URL(sUrl);
-    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    String userInfo = url.getUserInfo();
+    URLConnection openConnection = url.openConnection();
+    if (!userInfo.isEmpty()) {
+      String authStr = Base64.getEncoder()
+                             .encodeToString(userInfo.getBytes());
+      openConnection.setRequestProperty("Authorization", "Basic " + authStr);
+    }
+
+    BufferedReader in = new BufferedReader(new InputStreamReader(openConnection.getInputStream()));
     String inputLine;
     while ((inputLine = in.readLine()) != null)
       sbJson.append(inputLine);
@@ -156,7 +180,8 @@ public class App {
   private static SolrInputDocument json2SolrInputDocument(String j) {
     SolrInputDocument s = new SolrInputDocument();
     try {
-      Map<String, Object> map = objectMapper.readValue(j, new TypeReference<Map<String, Object>>() {});
+      Map<String, Object> map = objectMapper.readValue(j, new TypeReference<Map<String, Object>>() {
+      });
       for (Entry<String, Object> e : map.entrySet()) {
         if (!e.getKey()
               .equals("_version_"))
@@ -175,8 +200,11 @@ public class App {
    * @throws IOException
    * @throws SolrServerException
    */
-  private static void writeAllDocuments(HttpSolrClient client, File outputFile) throws FileNotFoundException,
-                                                                                IOException, SolrServerException {
+  private static void writeAllDocuments(HttpSolrClient client, File outputFile) throws FileNotFoundException, IOException,
+                                                                                SolrServerException {
+    if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
+      throw new RuntimeException("skipFieldsStartWith and skipFieldsEndWith are not supported at writing time");
+    }
     if (!config.getDryRun() && config.getDeleteAll()) {
       logger.info("delete all!");
       client.deleteByQuery("*:*");
@@ -188,8 +216,13 @@ public class App {
         .collect(StreamUtils.batchCollector(config.getBlockSize(), l -> {
           List<SolrInputDocument> collect = l.stream()
                                              .map(App::json2SolrInputDocument)
+                                             .map(d -> {
+                                               skipFieldsEquals.forEach(f -> d.removeField(f.getText()));
+                                               return d;
+                                             })
                                              .collect(Collectors.toList());
           try {
+
             if (!config.getDryRun()) {
               logger.info("adding " + collect.size() + " documents (" + incrementCounter(collect.size()) + ")");
               client.add(collect);
@@ -242,19 +275,6 @@ public class App {
     if (!config.getDryRun()) {
       logger.info("Creating " + config.getFileName());
 
-      Set<SkipField> skipFieldsEquals = config.getSkipFieldsSet()
-                                              .stream()
-                                              .filter(s -> s.getMatch() == MatchType.EQUAL)
-                                              .collect(Collectors.toSet());
-      Set<SkipField> skipFieldsStartWith = config.getSkipFieldsSet()
-                                                 .stream()
-                                                 .filter(s -> s.getMatch() == MatchType.STARTS_WITH)
-                                                 .collect(Collectors.toSet());
-      Set<SkipField> skipFieldsEndWith = config.getSkipFieldsSet()
-                                               .stream()
-                                               .filter(s -> s.getMatch() == MatchType.ENDS_WITH)
-                                               .collect(Collectors.toSet());
-
       try (PrintWriter pw = new PrintWriter(outputFile)) {
         solrQuery.setRows(200);
         boolean done = false;
@@ -296,6 +316,5 @@ public class App {
     }
 
   }
-
 
 }
