@@ -159,7 +159,7 @@ public class App {
     URL url = new URL(sUrl);
     String userInfo = url.getUserInfo();
     URLConnection openConnection = url.openConnection();
-    if (!userInfo.isEmpty()) {
+    if (userInfo != null && !userInfo.isEmpty()) {
       String authStr = Base64.getEncoder()
                              .encodeToString(userInfo.getBytes());
       openConnection.setRequestProperty("Authorization", "Basic " + authStr);
