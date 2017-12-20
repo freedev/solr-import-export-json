@@ -262,7 +262,7 @@ public class App {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     // objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
-    DateFormat df = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:sss'Z'");
+    DateFormat df = new SimpleDateFormat(config.getDateTimeFormat());
     objectMapper.setDateFormat(df);
     objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 

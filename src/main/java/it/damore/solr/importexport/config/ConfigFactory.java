@@ -18,20 +18,21 @@ import it.damore.solr.importexport.config.SkipField.MatchType;
 
 public class ConfigFactory {
 
-  private static Logger         logger       = LoggerFactory.getLogger(ConfigFactory.class);
+  private static Logger         logger          = LoggerFactory.getLogger(ConfigFactory.class);
 
-  private static final String[] BLOCK_SIZE   = new String[] {"b", "blockSize"};
-  private static final String[] SOLR_URL     = new String[] {"s", "solrUrl"};
-  private static final String[] ACTION_TYPE  = new String[] {"a", "actionType"};
-  private static final String[] OUTPUT       = new String[] {"o", "output"};
-  private static final String[] DELETE_ALL   = new String[] {"d", "deleteAll"};
-  private static final String[] FILTER_QUERY = new String[] {"f", "filterQuery"};
-  private static final String[] HELP         = new String[] {"h", "help"};
-  private static final String[] DRY_RUN      = new String[] {"D", "dryRun"};
-  private static final String[] UNIQUE_KEY   = new String[] {"k", "uniqueKey"};
-  private static final String[] SKIP_FIELDS  = new String[] {"S", "skipFields"};
+  private static final String[] BLOCK_SIZE      = new String[] {"b", "blockSize"};
+  private static final String[] SOLR_URL        = new String[] {"s", "solrUrl"};
+  private static final String[] ACTION_TYPE     = new String[] {"a", "actionType"};
+  private static final String[] OUTPUT          = new String[] {"o", "output"};
+  private static final String[] DELETE_ALL      = new String[] {"d", "deleteAll"};
+  private static final String[] FILTER_QUERY    = new String[] {"f", "filterQuery"};
+  private static final String[] HELP            = new String[] {"h", "help"};
+  private static final String[] DRY_RUN         = new String[] {"D", "dryRun"};
+  private static final String[] UNIQUE_KEY      = new String[] {"k", "uniqueKey"};
+  private static final String[] SKIP_FIELDS     = new String[] {"S", "skipFields"};
+  private static final String[] DATETIME_FORMAT = new String[] {"F", "dateTimeFormat"};
 
- 
+
   /**
    * read parameters from args
    * 
@@ -39,7 +40,8 @@ public class ConfigFactory {
    * @return Config
    * @throws ParseException
    */
-  public static CommandLineConfig getConfigFromArgs(String[] args) throws ParseException {
+  public static CommandLineConfig getConfigFromArgs(String[] args) throws ParseException
+  {
     CommandLine cmd = parseCommandLine(args);
     String solrUrl = cmd.getOptionValue(SOLR_URL[1]);
     String skipFields = cmd.getOptionValue(SKIP_FIELDS[1]);
@@ -50,6 +52,7 @@ public class ConfigFactory {
     Boolean dryRun = cmd.hasOption(DRY_RUN[1]);
     String actionType = cmd.getOptionValue(ACTION_TYPE[1]);
     String blockSize = cmd.getOptionValue(BLOCK_SIZE[1]);
+    String dateTimeFormat = cmd.getOptionValue(DATETIME_FORMAT[1]);
 
     if (actionType == null) {
       throw new MissingArgumentException("actionType should be [" + String.join("|", ActionType.getNames()) + "]");
@@ -73,14 +76,15 @@ public class ConfigFactory {
                                 .splitAsStream(skipFields)
                                 .map(String::trim)
                                 .filter(s -> !s.equals("*"))
-                                .map(s -> {
-                                  if (s.startsWith("*")) {
-                                    return new SkipField(s.substring(1), MatchType.ENDS_WITH);
-                                  } else if (s.endsWith("*")) {
-                                    return new SkipField(s.substring(0, s.length() - 1), MatchType.STARTS_WITH);
-                                  } else
-                                    return new SkipField(s, MatchType.EQUAL);
-                                })
+                                .map(s ->
+                                  {
+                                    if (s.startsWith("*")) {
+                                      return new SkipField(s.substring(1), MatchType.ENDS_WITH);
+                                    } else if (s.endsWith("*")) {
+                                      return new SkipField(s.substring(0, s.length() - 1), MatchType.STARTS_WITH);
+                                    } else
+                                      return new SkipField(s, MatchType.EQUAL);
+                                  })
                                 .collect(Collectors.toSet()));
     }
 
@@ -104,6 +108,10 @@ public class ConfigFactory {
       c.setBlockSize(Integer.parseInt(blockSize));
     }
     
+    if (dateTimeFormat != null) {
+      
+    }
+
     logger.info("Current configuration " + c);
 
     return c;
@@ -116,11 +124,11 @@ public class ConfigFactory {
    * @return
    * @throws ParseException
    */
-  private static CommandLine parseCommandLine(String[] args) throws ParseException {
+  private static CommandLine parseCommandLine(String[] args) throws ParseException
+  {
     Options cliOptions = new Options();
     cliOptions.addOption(SOLR_URL[0], SOLR_URL[1], true, "solr url");
-    cliOptions.addOption(ACTION_TYPE[0], ACTION_TYPE[1], true,
-                         "action type [" + String.join("|", ActionType.getNames()) + "]");
+    cliOptions.addOption(ACTION_TYPE[0], ACTION_TYPE[1], true, "action type [" + String.join("|", ActionType.getNames()) + "]");
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before import");
     cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during export");
@@ -128,8 +136,8 @@ public class ConfigFactory {
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
     cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true,
                          "comma separated fields list to skip during export/import, this field accepts start and end wildcard *. So you can specify skip all fields starting with name_*");
-    cliOptions.addOption(BLOCK_SIZE[0], BLOCK_SIZE[1], true,
-                         "block size (default " + CommandLineConfig.DEFAULT_BLOCK_SIZE + " documents)");
+    cliOptions.addOption(BLOCK_SIZE[0], BLOCK_SIZE[1], true, "block size (default " + CommandLineConfig.DEFAULT_BLOCK_SIZE + " documents)");
+    cliOptions.addOption(DATETIME_FORMAT[0], DATETIME_FORMAT[1], true, "set custom DateTime format (default " + CommandLineConfig.DEFAULT_DATETIME_FORMAT + " )");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);

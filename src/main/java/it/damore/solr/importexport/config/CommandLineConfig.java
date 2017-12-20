@@ -56,6 +56,7 @@ public class CommandLineConfig {
   }
   
   public static final int DEFAULT_BLOCK_SIZE = 500;
+  public static final String DEFAULT_DATETIME_FORMAT = "YYYY-MM-dd'T'HH:mm:sss'Z'";
   
   private ActionType actionType;
   private String solrUrl;
@@ -66,6 +67,7 @@ public class CommandLineConfig {
   private String uniqueKey;
   private Boolean dryRun;
   private int blockSize = DEFAULT_BLOCK_SIZE;
+  private String dateTimeFormat = DEFAULT_DATETIME_FORMAT;
   /**
    * @return the solrUrl
    */
@@ -197,14 +199,31 @@ public class CommandLineConfig {
     this.blockSize = blockSize;
   }
 
+  
+  /**
+   * @return the dateTimeFormat
+   */
+  public String getDateTimeFormat()
+  {
+    return dateTimeFormat;
+  }
+
+  /**
+   * @param dateTimeFormat the dateTimeFormat to set
+   */
+  public void setDateTimeFormat(String dateTimeFormat)
+  {
+    this.dateTimeFormat = dateTimeFormat;
+  }
+
   /* (non-Javadoc)
    * @see java.lang.Object#toString()
    */
   @Override
-  public String toString() {
-    return "Config [actionType=" + actionType + ", solrUrl=" + solrUrl + ", fileName=" + fileName + ", deleteAll="
-           + deleteAll + ", skipFieldsSet=" + skipFieldsSet + ", filterQuery=" + filterQuery + ", uniqueKey="
-           + uniqueKey + ", dryRun=" + dryRun + "]";
+  public String toString()
+  {
+    return String.format("CommandLineConfig [actionType=%s, solrUrl=%s, fileName=%s, deleteAll=%s, skipFieldsSet=%s, filterQuery=%s, uniqueKey=%s, dryRun=%s, blockSize=%s, dateTimeFormat=%s]",
+                         actionType, solrUrl, fileName, deleteAll, skipFieldsSet, filterQuery, uniqueKey, dryRun, blockSize, dateTimeFormat);
   }
 
 }
