@@ -109,7 +109,7 @@ public class ConfigFactory {
     }
     
     if (dateTimeFormat != null) {
-      
+      c.setDateTimeFormat(dateTimeFormat);
     }
 
     logger.info("Current configuration " + c);
