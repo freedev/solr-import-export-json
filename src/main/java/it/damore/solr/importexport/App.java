@@ -276,7 +276,7 @@ public class App {
       logger.info("Creating " + config.getFileName());
 
       try (PrintWriter pw = new PrintWriter(outputFile)) {
-        solrQuery.setRows(200);
+        solrQuery.setRows(Math.toIntExact(r.getResults().getNumFound()));
         boolean done = false;
         while (!done) {
           solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
@@ -305,7 +305,7 @@ public class App {
             }
             pw.write("\n");
           }
-          if (cursorMark.equals(nextCursorMark)) {
+          if (nextCursorMark==null || cursorMark.equals(nextCursorMark)) {
             done = true;
           }
 
