@@ -100,7 +100,7 @@ public class App {
       readUniqueKeyFromSolrSchema();
     }
 
-    try (HttpSolrClient client = new HttpSolrClient(config.getSolrUrl())) {
+    try (HttpSolrClient client = new HttpSolrClient.Builder().withBaseSolrUrl(config.getSolrUrl()).build()) {
 
       try {
         switch (config.getActionType()) {
