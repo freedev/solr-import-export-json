@@ -275,12 +275,15 @@ public class App {
       logger.info("Creating " + config.getFileName());
 
       try (PrintWriter pw = new PrintWriter(outputFile)) {
-        solrQuery.setRows(200);
+        solrQuery.setRows(config.getBlockSize());
         boolean done = false;
         while (!done) {
           solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
           QueryResponse rsp = client.query(solrQuery);
           String nextCursorMark = rsp.getNextCursorMark();
+          if (nextCursorMark == null) {
+            logger.warn("ATTENTION: you're dealing with a old version of Solr which does not support cursors");
+          }
 
           for (SolrDocument d : rsp.getResults()) {
             skipFieldsEquals.forEach(f -> d.removeFields(f.getText()));
@@ -304,9 +307,10 @@ public class App {
             }
             pw.write("\n");
           }
-          if (cursorMark.equals(nextCursorMark)) {
+          if (nextCursorMark == null || cursorMark.equals(nextCursorMark)) {
             done = true;
           }
+          logger.info("reading " + config.getBlockSize() + " documents (" + incrementCounter(config.getBlockSize()) + ")");
 
           cursorMark = nextCursorMark;
         }
