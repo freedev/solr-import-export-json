@@ -304,7 +304,7 @@ public class App {
             }
             pw.write("\n");
           }
-          if (cursorMark.equals(nextCursorMark)) {
+          if (nextCursorMark==null || cursorMark.equals(nextCursorMark)) {
             done = true;
           }
 
