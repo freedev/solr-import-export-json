@@ -127,7 +127,7 @@ public class ConfigFactory {
   private static CommandLine parseCommandLine(String[] args) throws ParseException
   {
     Options cliOptions = new Options();
-    cliOptions.addOption(SOLR_URL[0], SOLR_URL[1], true, "solr url");
+    cliOptions.addOption(SOLR_URL[0], SOLR_URL[1], true, "solr url - http://localhost:8983/solr/collection_name");
     cliOptions.addOption(ACTION_TYPE[0], ACTION_TYPE[1], true, "action type [" + String.join("|", ActionType.getNames()) + "]");
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before import");
