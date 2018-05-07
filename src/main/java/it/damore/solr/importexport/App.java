@@ -28,6 +28,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.params.CursorMarkParams;
 import org.slf4j.Logger;
@@ -285,7 +286,8 @@ public class App {
             logger.warn("ATTENTION: you're dealing with a old version of Solr which does not support cursors");
           }
 
-          for (SolrDocument d : rsp.getResults()) {
+          SolrDocumentList results = rsp.getResults();
+          for (SolrDocument d : results) {
             skipFieldsEquals.forEach(f -> d.removeFields(f.getText()));
             if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
               Map<String, Object> collect = d.entrySet()
@@ -309,8 +311,9 @@ public class App {
           }
           if (nextCursorMark == null || cursorMark.equals(nextCursorMark)) {
             done = true;
+          } else {
+            logger.info("reading " + results.getNumFound() + " documents (" + incrementCounter(results.getNumFound()) + ")");
           }
-          logger.info("reading " + config.getBlockSize() + " documents (" + incrementCounter(config.getBlockSize()) + ")");
 
           cursorMark = nextCursorMark;
         }
