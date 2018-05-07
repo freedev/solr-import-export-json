@@ -9,5 +9,5 @@ fi
 
 export MAVEN_OPTS=-Dfile.encoding=utf-8
 
-mvn exec:java -Dexec.mainClass="it.damore.solr.importexport.App" -Dexec.args="$PARAMS"
+mvn exec:java -Dexec.cleanupDaemonThreads=false -Dexec.mainClass="it.damore.solr.importexport.App" -Dexec.args="$PARAMS"
 
