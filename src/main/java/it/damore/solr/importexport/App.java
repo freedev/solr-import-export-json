@@ -312,7 +312,7 @@ public class App {
           if (nextCursorMark == null || cursorMark.equals(nextCursorMark)) {
             done = true;
           } else {
-            logger.info("reading " + results.getNumFound() + " documents (" + incrementCounter(results.getNumFound()) + ")");
+            logger.info("reading " + results.size() + " documents (" + incrementCounter(results.size()) + ")");
           }
 
           cursorMark = nextCursorMark;
