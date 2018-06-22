@@ -64,6 +64,9 @@ public class App {
   private static CommandLineConfig config       = null;
   private static ObjectMapper      objectMapper = new ObjectMapper();
   private static long              counter;
+  private static long              skipCount;
+  private static Integer           commitAfter;
+  private static long              lastCommit = 0;
 
   private static Set<SkipField> skipFieldsEquals;
   private static Set<SkipField> skipFieldsStartWith;
@@ -94,6 +97,8 @@ public class App {
                               .stream()
                               .filter(s -> s.getMatch() == MatchType.ENDS_WITH)
                               .collect(Collectors.toSet());
+    skipCount = config.getSkipCount();
+    commitAfter = config.getCommitAfter();
 
     logger.info("Found config: " + config);
 
@@ -203,6 +208,8 @@ public class App {
    */
   private static void writeAllDocuments(HttpSolrClient client, File outputFile) throws FileNotFoundException, IOException,
                                                                                 SolrServerException {
+
+
     if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
       throw new RuntimeException("skipFieldsStartWith and skipFieldsEndWith are not supported at writing time");
     }
@@ -213,8 +220,7 @@ public class App {
     logger.info("Reading " + config.getFileName());
 
     try (BufferedReader pw = new BufferedReader(new FileReader(outputFile))) {
-      pw.lines()
-        .collect(StreamUtils.batchCollector(config.getBlockSize(), l -> {
+      pw.lines().collect(StreamUtils.batchCollector(config.getBlockSize(), l -> {
           List<SolrInputDocument> collect = l.stream()
                                              .map(App::json2SolrInputDocument)
                                              .map(d -> {
@@ -222,23 +228,45 @@ public class App {
                                                return d;
                                              })
                                              .collect(Collectors.toList());
-          try {
+        if (!insertBatch(client, collect)) {
+          int retry = 5;
+          while (--retry > 0 && !insertBatch(client, collect))//randomly when imported 10M documents, solr failed on Timeout exactly 10 minutes..
+          ;
+        }
+      }));
+    }
 
-            if (!config.getDryRun()) {
-              logger.info("adding " + collect.size() + " documents (" + incrementCounter(collect.size()) + ")");
-              client.add(collect);
-            }
-          } catch (SolrServerException | IOException e) {
-            throw new RuntimeException(e);
+    commit(client);
+
+  }
+
+  private static boolean insertBatch(HttpSolrClient client, List<SolrInputDocument> collect) {
+    try {
+
+      if (!config.getDryRun()) {
+        logger.info("adding " + collect.size() + " documents (" + incrementCounter(collect.size()) + ")");
+        if(counter >= skipCount){
+          client.add(collect);
+          if(commitAfter != null && counter - lastCommit > commitAfter){
+            commit(client);
+            lastCommit = counter;
           }
-        }));
+        } else {
+          logger.info("Skipping as current number of counter :" + counter +" is smaller than skipCount: " + skipCount);
+        }
+      }
+    } catch (SolrServerException | IOException e) {
+      logger.error("Problem while saving", e);
+      return false;
     }
+    return true;
+  }
 
+  private static void commit(HttpSolrClient client) throws SolrServerException, IOException {
     if (!config.getDryRun()) {
-      logger.info("Commit");
       client.commit();
+      logger.info("Committed");
     }
-
   }
 
   /**
