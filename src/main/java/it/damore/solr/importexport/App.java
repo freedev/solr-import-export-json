@@ -1,5 +1,27 @@
 package it.damore.solr.importexport;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import it.damore.solr.importexport.config.CommandLineConfig;
+import it.damore.solr.importexport.config.ConfigFactory;
+import it.damore.solr.importexport.config.SkipField;
+import it.damore.solr.importexport.config.SkipField.MatchType;
+import org.apache.commons.cli.ParseException;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.CursorMarkParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,30 +42,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
-
-import org.apache.commons.cli.ParseException;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.CursorMarkParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import it.damore.solr.importexport.config.CommandLineConfig;
-import it.damore.solr.importexport.config.ConfigFactory;
-import it.damore.solr.importexport.config.SkipField;
-import it.damore.solr.importexport.config.SkipField.MatchType;
 
 /*
  * This file is part of solr-import-export-json. solr-import-export-json is free software: you can redistribute it
@@ -210,8 +208,8 @@ public class App {
                                                                                 SolrServerException {
 
 
-    if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
-      throw new RuntimeException("skipFieldsStartWith and skipFieldsEndWith are not supported at writing time");
+    if (!skipFieldsEndWith.isEmpty()) {
+      throw new RuntimeException("skipFieldsEndWith are not supported at writing time");
     }
     if (!config.getDryRun() && config.getDeleteAll()) {
       logger.info("delete all!");
@@ -225,6 +223,14 @@ public class App {
                                              .map(App::json2SolrInputDocument)
                                              .map(d -> {
                                                skipFieldsEquals.forEach(f -> d.removeField(f.getText()));
+                                               if(!skipFieldsStartWith.isEmpty()) {
+                                                 d.getFieldNames().removeIf(name -> skipFieldsStartWith.stream()
+                                                     .anyMatch(skipField -> name.startsWith(skipField.getText())));
+                                               }
+                                               if(!skipFieldsEndWith.isEmpty()) {
+                                                 d.getFieldNames().removeIf(name -> skipFieldsEndWith.stream()
+                                                     .anyMatch(skipField -> name.endsWith(skipField.getText())));
+                                               }
                                                return d;
                                              })
                                              .collect(Collectors.toList());
