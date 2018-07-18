@@ -1,5 +1,7 @@
 package it.damore.solr.backuprestore;
 
+import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -10,6 +12,8 @@ import junit.framework.TestSuite;
 public class AppTest 
     extends TestCase
 {
+  
+  private EmbeddedSolrServer embeddedSolrServer;
     /**
      * Create the test case
      *

@@ -1,6 +1,6 @@
 package it.damore.solr.importexport.config;
 
-public class SkipField {
+public class SolrField {
   
   private String text;
   
@@ -12,7 +12,7 @@ public class SkipField {
     ENDS_WITH
   }
   
-  public SkipField(String text, MatchType match) {
+  public SolrField(String text, MatchType match) {
     this.text = text;
     this.match = match;
   }

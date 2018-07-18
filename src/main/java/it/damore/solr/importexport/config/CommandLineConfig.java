@@ -62,7 +62,8 @@ public class CommandLineConfig {
   private String solrUrl;
   private String fileName;
   private Boolean deleteAll;
-  private Set<SkipField> skipFieldsSet = Collections.emptySet();
+  private Set<SolrField> skipFieldSet = Collections.emptySet();
+  private Set<SolrField> includeFieldSet = Collections.emptySet();
   private String filterQuery;
   private String uniqueKey;
   private Boolean dryRun;
@@ -159,15 +160,15 @@ public class CommandLineConfig {
   /**
    * @return the skipFieldsSet
    */
-  public Set<SkipField> getSkipFieldsSet() {
-    return skipFieldsSet;
+  public Set<SolrField> getSkipFieldSet() {
+    return skipFieldSet;
   }
 
   /**
    * @param skipFieldsSet the skipFieldsSet to set
    */
-  public void setSkipFieldsSet(Set<SkipField> skipFieldsSet) {
-    this.skipFieldsSet = skipFieldsSet;
+  public void setSkipFieldSet(Set<SolrField> skipFieldSet) {
+    this.skipFieldSet = skipFieldSet;
   }
 
   /**
@@ -216,6 +217,16 @@ public class CommandLineConfig {
     this.dateTimeFormat = dateTimeFormat;
   }
 
+  public Set<SolrField> getIncludeFieldSet()
+  {
+    return includeFieldSet;
+  }
+
+  public void setIncludeFieldSet(Set<SolrField> includeFieldSet)
+  {
+    this.includeFieldSet = includeFieldSet;
+  }
+
   /* (non-Javadoc)
    * @see java.lang.Object#toString()
    */
@@ -223,7 +234,7 @@ public class CommandLineConfig {
   public String toString()
   {
     return String.format("CommandLineConfig [actionType=%s, solrUrl=%s, fileName=%s, deleteAll=%s, skipFieldsSet=%s, filterQuery=%s, uniqueKey=%s, dryRun=%s, blockSize=%s, dateTimeFormat=%s]",
-                         actionType, solrUrl, fileName, deleteAll, skipFieldsSet, filterQuery, uniqueKey, dryRun, blockSize, dateTimeFormat);
+                         actionType, solrUrl, fileName, deleteAll, skipFieldSet, filterQuery, uniqueKey, dryRun, blockSize, dateTimeFormat);
   }
 
 }
