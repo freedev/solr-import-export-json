@@ -68,3 +68,7 @@ import documents from json but first delete all documents in the collection
 export documents and skip few fields. In the example the will be skipped the fields: `field1_a`, all the fields starting with `field2_` and all the fields ending with `_date`
 
      ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --skipFields field1_a,field2_*,*_date
+
+Import documents, skip first 49835000 records from file, commit every 200000 documents, block size 5000 (faster than default 500) 
+
+    ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json -x 49835000 -c 200000 -b 5000 

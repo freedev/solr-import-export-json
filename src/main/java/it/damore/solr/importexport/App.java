@@ -1,5 +1,27 @@
 package it.damore.solr.importexport;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import it.damore.solr.importexport.config.CommandLineConfig;
+import it.damore.solr.importexport.config.ConfigFactory;
+import it.damore.solr.importexport.config.SkipField;
+import it.damore.solr.importexport.config.SkipField.MatchType;
+import org.apache.commons.cli.ParseException;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.params.CursorMarkParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,30 +43,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import org.apache.commons.cli.ParseException;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.params.CursorMarkParams;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
-import it.damore.solr.importexport.config.CommandLineConfig;
-import it.damore.solr.importexport.config.ConfigFactory;
-import it.damore.solr.importexport.config.SkipField;
-import it.damore.solr.importexport.config.SkipField.MatchType;
-
 /*
  * This file is part of solr-import-export-json. solr-import-export-json is free software: you can redistribute it
  * and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
@@ -64,6 +62,9 @@ public class App {
   private static CommandLineConfig config       = null;
   private static ObjectMapper      objectMapper = new ObjectMapper();
   private static long              counter;
+  private static long              skipCount;
+  private static Integer           commitAfter;
+  private static long              lastCommit = 0;
 
   private static Set<SkipField> skipFieldsEquals;
   private static Set<SkipField> skipFieldsStartWith;
@@ -94,6 +95,8 @@ public class App {
                               .stream()
                               .filter(s -> s.getMatch() == MatchType.ENDS_WITH)
                               .collect(Collectors.toSet());
+    skipCount = config.getSkipCount();
+    commitAfter = config.getCommitAfter();
 
     logger.info("Found config: " + config);
 
@@ -203,8 +206,10 @@ public class App {
    */
   private static void writeAllDocuments(HttpSolrClient client, File outputFile) throws FileNotFoundException, IOException,
                                                                                 SolrServerException {
-    if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
-      throw new RuntimeException("skipFieldsStartWith and skipFieldsEndWith are not supported at writing time");
+
+
+    if (!skipFieldsEndWith.isEmpty()) {
+      throw new RuntimeException("skipFieldsEndWith are not supported at writing time");
     }
     if (!config.getDryRun() && config.getDeleteAll()) {
       logger.info("delete all!");
@@ -213,32 +218,61 @@ public class App {
     logger.info("Reading " + config.getFileName());
 
     try (BufferedReader pw = new BufferedReader(new FileReader(outputFile))) {
-      pw.lines()
-        .collect(StreamUtils.batchCollector(config.getBlockSize(), l -> {
+      pw.lines().collect(StreamUtils.batchCollector(config.getBlockSize(), l -> {
           List<SolrInputDocument> collect = l.stream()
                                              .map(App::json2SolrInputDocument)
                                              .map(d -> {
                                                skipFieldsEquals.forEach(f -> d.removeField(f.getText()));
+                                               if(!skipFieldsStartWith.isEmpty()) {
+                                                 d.getFieldNames().removeIf(name -> skipFieldsStartWith.stream()
+                                                     .anyMatch(skipField -> name.startsWith(skipField.getText())));
+                                               }
+                                               if(!skipFieldsEndWith.isEmpty()) {
+                                                 d.getFieldNames().removeIf(name -> skipFieldsEndWith.stream()
+                                                     .anyMatch(skipField -> name.endsWith(skipField.getText())));
+                                               }
                                                return d;
                                              })
                                              .collect(Collectors.toList());
-          try {
+        if (!insertBatch(client, collect)) {
+          int retry = 5;
+          while (--retry > 0 && !insertBatch(client, collect))//randomly when imported 10M documents, solr failed on Timeout exactly 10 minutes..
+          ;
+        }
+      }));
+    }
 
-            if (!config.getDryRun()) {
-              logger.info("adding " + collect.size() + " documents (" + incrementCounter(collect.size()) + ")");
-              client.add(collect);
-            }
-          } catch (SolrServerException | IOException e) {
-            throw new RuntimeException(e);
+    commit(client);
+
+  }
+
+  private static boolean insertBatch(HttpSolrClient client, List<SolrInputDocument> collect) {
+    try {
+
+      if (!config.getDryRun()) {
+        logger.info("adding " + collect.size() + " documents (" + incrementCounter(collect.size()) + ")");
+        if(counter >= skipCount){
+          client.add(collect);
+          if(commitAfter != null && counter - lastCommit > commitAfter){
+            commit(client);
+            lastCommit = counter;
           }
-        }));
+        } else {
+          logger.info("Skipping as current number of counter :" + counter +" is smaller than skipCount: " + skipCount);
+        }
+      }
+    } catch (SolrServerException | IOException e) {
+      logger.error("Problem while saving", e);
+      return false;
     }
+    return true;
+  }
 
+  private static void commit(HttpSolrClient client) throws SolrServerException, IOException {
     if (!config.getDryRun()) {
-      logger.info("Commit");
       client.commit();
+      logger.info("Committed");
     }
-
   }
 
   /**
