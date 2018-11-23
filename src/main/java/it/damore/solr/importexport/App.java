@@ -284,6 +284,7 @@ public class App {
   private static void readAllDocuments(HttpSolrClient client, File outputFile) throws SolrServerException, IOException {
 
     SolrQuery solrQuery = new SolrQuery();
+    solrQuery.setTimeAllowed(-1);
     solrQuery.setQuery("*:*");
     if (config.getFilterQuery() != null) {
       solrQuery.addFilterQuery(config.getFilterQuery());
