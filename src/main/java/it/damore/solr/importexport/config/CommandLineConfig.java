@@ -67,6 +67,8 @@ public class CommandLineConfig {
   private String filterQuery;
   private String uniqueKey;
   private Boolean dryRun;
+  private long skipCount;
+  private Integer commitAfter;
   private int blockSize = DEFAULT_BLOCK_SIZE;
   private String dateTimeFormat = DEFAULT_DATETIME_FORMAT;
   /**
@@ -225,6 +227,23 @@ public class CommandLineConfig {
   public void setIncludeFieldSet(Set<SolrField> includeFieldSet)
   {
     this.includeFieldSet = includeFieldSet;
+  }
+  
+  public long getSkipCount() {
+    return skipCount;
+  }
+
+  public void setSkipCount(long skipCount) {
+    this.skipCount = skipCount;
+  }
+
+
+  public Integer getCommitAfter() {
+    return commitAfter;
+  }
+
+  public void setCommitAfter(Integer commitAfter) {
+    this.commitAfter = commitAfter;
   }
 
   /* (non-Javadoc)

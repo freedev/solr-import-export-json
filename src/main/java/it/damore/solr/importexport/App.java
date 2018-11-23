@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.ParseException;
@@ -30,6 +31,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.SolrInputField;
 import org.apache.solr.common.params.CursorMarkParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +47,11 @@ import it.damore.solr.importexport.config.ConfigFactory;
 import it.damore.solr.importexport.config.SolrField;
 import it.damore.solr.importexport.config.SolrField.MatchType;
 
+//@formatter:off
 /*
- * This file is part of solr-import-export-json. solr-import-export-json is free software: you can redistribute it
+ * This file is part of solr-import-export-json.
+ * 
+ * solr-import-export-json is free software: you can redistribute it
  * and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation,
  * either version 3 of the License, or (at your option) any later version. solr-import-export-json is distributed in the
  * hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -54,6 +59,7 @@ import it.damore.solr.importexport.config.SolrField.MatchType;
  * copy of the GNU General Public License along with solr-import-export-json. If not, see
  * <http://www.gnu.org/licenses/>.
  */
+//@formatter:on
 
 /**
  * @author freedev Import and Export of a Solr collection
@@ -64,6 +70,9 @@ public class App {
   private static CommandLineConfig config       = null;
   private static ObjectMapper      objectMapper = new ObjectMapper();
   private static long              counter;
+  private static long              skipCount;
+  private static Integer           commitAfter;
+  private static long              lastCommit   = 0;
 
   private static Set<SolrField>    includeFieldsEquals;
   private static Set<SolrField>    skipFieldsEquals;
@@ -101,6 +110,8 @@ public class App {
                               .stream()
                               .filter(s -> s.getMatch() == MatchType.ENDS_WITH)
                               .collect(Collectors.toSet());
+    skipCount = config.getSkipCount();
+    commitAfter = config.getCommitAfter();
 
     logger.info("Found config: " + config);
 
@@ -212,9 +223,7 @@ public class App {
    */
   private static void writeAllDocuments(HttpSolrClient client, File outputFile) throws FileNotFoundException, IOException, SolrServerException
   {
-    if (skipFieldsStartWith.size() > 0 || skipFieldsEndWith.size() > 0) {
-      throw new RuntimeException("skipFieldsStartWith and skipFieldsEndWith are not supported at writing time");
-    }
+    AtomicInteger counter = new AtomicInteger(10000);
     if (!config.getDryRun() && config.getDeleteAll()) {
       logger.info("delete all!");
       client.deleteByQuery("*:*");
@@ -230,26 +239,61 @@ public class App {
                                                .map(d ->
                                                  {
                                                    skipFieldsEquals.forEach(f -> d.removeField(f.getText()));
+                                                   if (!skipFieldsStartWith.isEmpty()) {
+                                                     d.getFieldNames()
+                                                      .removeIf(name -> skipFieldsStartWith.stream()
+                                                                                           .anyMatch(skipField -> name.startsWith(skipField.getText())));
+                                                   }
+                                                   if (!skipFieldsEndWith.isEmpty()) {
+                                                     d.getFieldNames()
+                                                      .removeIf(name -> skipFieldsEndWith.stream()
+                                                                                         .anyMatch(skipField -> name.endsWith(skipField.getText())));
+                                                   }
                                                    return d;
                                                  })
                                                .collect(Collectors.toList());
-            try {
-
-              if (!config.getDryRun()) {
-                logger.info("adding " + collect.size() + " documents (" + incrementCounter(collect.size()) + ")");
-                client.add(collect);
-              }
-            } catch (SolrServerException | IOException e) {
-              throw new RuntimeException(e);
+            if (!insertBatch(client, collect)) {
+              int retry = 5;
+              while (--retry > 0 && !insertBatch(client, collect))// randomly when imported 10M documents, solr failed
+                                                                  // on Timeout exactly 10 minutes..
+              ;
             }
           }));
     }
 
-    if (!config.getDryRun()) {
-      logger.info("Commit");
-      client.commit();
-    }
+    commit(client);
 
+  }
+
+  private static boolean insertBatch(HttpSolrClient client, List<SolrInputDocument> collect)
+  {
+    try {
+
+      if (!config.getDryRun()) {
+        logger.info("adding " + collect.size() + " documents (" + incrementCounter(collect.size()) + ")");
+        if (counter >= skipCount) {
+          client.add(collect);
+          if (commitAfter != null && counter - lastCommit > commitAfter) {
+            commit(client);
+            lastCommit = counter;
+          }
+        } else {
+          logger.info("Skipping as current number of counter :" + counter + " is smaller than skipCount: " + skipCount);
+        }
+      }
+    } catch (SolrServerException | IOException e) {
+      logger.error("Problem while saving", e);
+      return false;
+    }
+    return true;
+  }
+
+  private static void commit(HttpSolrClient client) throws SolrServerException, IOException
+  {
+    if (!config.getDryRun()) {
+      client.commit();
+      logger.info("Committed");
+    }
   }
 
   /**

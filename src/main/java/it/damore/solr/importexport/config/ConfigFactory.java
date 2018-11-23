@@ -19,20 +19,22 @@ import it.damore.solr.importexport.config.SolrField.MatchType;
 
 public class ConfigFactory {
 
-  private static Logger         logger          = LoggerFactory.getLogger(ConfigFactory.class);
+  private static Logger         logger             = LoggerFactory.getLogger(ConfigFactory.class);
 
-  private static final String[] BLOCK_SIZE      = new String[] {"b", "blockSize"};
-  private static final String[] SOLR_URL        = new String[] {"s", "solrUrl"};
-  private static final String[] ACTION_TYPE     = new String[] {"a", "actionType"};
-  private static final String[] OUTPUT          = new String[] {"o", "output"};
-  private static final String[] DELETE_ALL      = new String[] {"d", "deleteAll"};
-  private static final String[] FILTER_QUERY    = new String[] {"f", "filterQuery"};
-  private static final String[] HELP            = new String[] {"h", "help"};
-  private static final String[] DRY_RUN         = new String[] {"D", "dryRun"};
-  private static final String[] UNIQUE_KEY      = new String[] {"k", "uniqueKey"};
-  private static final String[] SKIP_FIELDS     = new String[] {"S", "skipFields"};
-  private static final String[] INCLUDE_FIELDS  = new String[] {"i", "includeFields"};
-  private static final String[] DATETIME_FORMAT = new String[] {"F", "dateTimeFormat"};
+  private static final String[] BLOCK_SIZE         = new String[] {"b", "blockSize"};
+  private static final String[] SKIP_DOCS          = new String[] {"x", "skipCount"};
+  private static final String[] COMMIT_DURING_WORK = new String[] {"c", "commitDuringImport"};
+  private static final String[] SOLR_URL           = new String[] {"s", "solrUrl"};
+  private static final String[] ACTION_TYPE        = new String[] {"a", "actionType"};
+  private static final String[] OUTPUT             = new String[] {"o", "output"};
+  private static final String[] DELETE_ALL         = new String[] {"d", "deleteAll"};
+  private static final String[] FILTER_QUERY       = new String[] {"f", "filterQuery"};
+  private static final String[] HELP               = new String[] {"h", "help"};
+  private static final String[] DRY_RUN            = new String[] {"D", "dryRun"};
+  private static final String[] UNIQUE_KEY         = new String[] {"k", "uniqueKey"};
+  private static final String[] SKIP_FIELDS        = new String[] {"S", "skipFields"};
+  private static final String[] INCLUDE_FIELDS     = new String[] {"i", "includeFields"};
+  private static final String[] DATETIME_FORMAT    = new String[] {"F", "dateTimeFormat"};
 
 
   /**
@@ -55,6 +57,8 @@ public class ConfigFactory {
     Boolean dryRun = cmd.hasOption(DRY_RUN[1]);
     String actionType = cmd.getOptionValue(ACTION_TYPE[1]);
     String blockSize = cmd.getOptionValue(BLOCK_SIZE[1]);
+    String skipCount = cmd.getOptionValue(SKIP_DOCS[1]);
+    String commitAfter = cmd.getOptionValue(COMMIT_DURING_WORK[1]);
     String dateTimeFormat = cmd.getOptionValue(DATETIME_FORMAT[1]);
 
     if (actionType == null) {
@@ -96,6 +100,13 @@ public class ConfigFactory {
     c.setDeleteAll(deleteAll);
 
     c.setDryRun(dryRun);
+    if (skipCount != null) {
+      c.setSkipCount(Long.valueOf(skipCount));
+    }
+
+    if (commitAfter != null) {
+      c.setCommitAfter(Integer.valueOf(commitAfter));
+    }
 
     if (blockSize != null) {
       c.setBlockSize(Integer.parseInt(blockSize));
@@ -153,6 +164,9 @@ public class ConfigFactory {
     cliOptions.addOption(SKIP_FIELDS[0], SKIP_FIELDS[1], true,
                          "comma separated fields list to skip during export/import, this field list accepts for each field prefix/suffix a wildcard *. So you can specify skip all fields starting with name_*");
     cliOptions.addOption(BLOCK_SIZE[0], BLOCK_SIZE[1], true, "block size (default " + CommandLineConfig.DEFAULT_BLOCK_SIZE + " documents)");
+    cliOptions.addOption(SKIP_DOCS[0], SKIP_DOCS[1], true,
+                         "Number of documents to be skipped when loading from file. Useful when an error occurs, " + "so loading can continue from last successful save." + " ");
+    cliOptions.addOption(COMMIT_DURING_WORK[0], COMMIT_DURING_WORK[1], true, "Commit progress after specified number of docs. If not specified, " + "whole work will be committed.");
     cliOptions.addOption(DATETIME_FORMAT[0], DATETIME_FORMAT[1], true, "set custom DateTime format (default " + CommandLineConfig.DEFAULT_DATETIME_FORMAT + " )");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
