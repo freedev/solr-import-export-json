@@ -306,6 +306,7 @@ public class App {
   {
 
     SolrQuery solrQuery = new SolrQuery();
+    solrQuery.setTimeAllowed(-1);
     solrQuery.setQuery("*:*");
     if (config.getFilterQuery() != null) {
       solrQuery.addFilterQuery(config.getFilterQuery());
