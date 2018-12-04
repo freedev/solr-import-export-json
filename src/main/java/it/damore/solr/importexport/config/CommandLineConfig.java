@@ -55,7 +55,7 @@ public class CommandLineConfig {
 
   }
   
-  public static final int DEFAULT_BLOCK_SIZE = 500;
+  public static final int DEFAULT_BLOCK_SIZE = 5000;
   public static final String DEFAULT_DATETIME_FORMAT = "YYYY-MM-dd'T'HH:mm:sss'Z'";
   
   private ActionType actionType;
