@@ -107,7 +107,7 @@ public class CommandLineConfig {
   }
 
   /**
-   * @param ActionType the ActionType to set
+   * @param actionType the ActionType to set
    */
   public void setActionType(ActionType actionType) {
     this.actionType = actionType;
@@ -115,7 +115,7 @@ public class CommandLineConfig {
 
   /**
    * 
-   * @return
+   * @return fileName
    */
   public String getFileName() {
     return fileName;
@@ -167,7 +167,7 @@ public class CommandLineConfig {
   }
 
   /**
-   * @param skipFieldsSet the skipFieldsSet to set
+   * @param skipFieldSet the list of fields to skip
    */
   public void setSkipFieldSet(Set<SolrField> skipFieldSet) {
     this.skipFieldSet = skipFieldSet;

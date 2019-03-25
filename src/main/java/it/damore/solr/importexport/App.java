@@ -13,12 +13,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -160,10 +156,17 @@ public class App {
   private static void readUniqueKeyFromSolrSchema() throws IOException, JsonParseException, JsonMappingException, MalformedURLException
   {
     String sUrl = config.getSolrUrl() + "/schema/uniquekey?wt=json";
-    Map<String, Object> uniqueKey = objectMapper.readValue(readUrl(sUrl), new TypeReference<Map<String, Object>>() {});
-    if (uniqueKey.containsKey("uniqueKey")) {
-      config.setUniqueKey((String) uniqueKey.get("uniqueKey"));
-    } else {
+    Map<String, Object> uniqueKey = null;
+    try {
+      uniqueKey = objectMapper.readValue(readUrl(sUrl), new TypeReference<Map<String, Object>>() {});
+      if (uniqueKey.containsKey("uniqueKey")) {
+        config.setUniqueKey((String) uniqueKey.get("uniqueKey"));
+      } else {
+        config.setUniqueKey("id");
+        logger.warn("unable to find valid uniqueKey defaulting to \"id\".");
+      }
+    } catch (IOException e) {
+      config.setUniqueKey("id");
       logger.warn("unable to find valid uniqueKey defaulting to \"id\".");
     }
   }
