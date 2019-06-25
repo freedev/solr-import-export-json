@@ -13,7 +13,7 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <solr.version>7.3.0</solr.version>
-      <jackson-databind.version>2.9.8</jackson-databind.version>
+      <jackson-databind.version>[2.9.9,)</jackson-databind.version>
    </properties>
 
    <build>
