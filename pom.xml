@@ -12,7 +12,7 @@
 
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <solr.version>8.1.1</solr.version>
+      <solr.version>8.2.0</solr.version>
       <jackson-databind.version>[2.9.9,)</jackson-databind.version>
    </properties>
    <build>
