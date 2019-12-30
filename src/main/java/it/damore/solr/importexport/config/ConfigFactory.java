@@ -36,6 +36,8 @@ public class ConfigFactory {
   private static final String[] SKIP_FIELDS        = new String[] {"S", "skipFields"};
   private static final String[] INCLUDE_FIELDS     = new String[] {"i", "includeFields"};
   private static final String[] DATETIME_FORMAT    = new String[] {"F", "dateTimeFormat"};
+  private static final String[] USER               = new String[] {"u", "user"};
+  private static final String[] PASSWORD           = new String[] {"p", "password"};
 
 
   /**
@@ -62,6 +64,8 @@ public class ConfigFactory {
     String skipCount = cmd.getOptionValue(SKIP_DOCS[1]);
     String commitAfter = cmd.getOptionValue(COMMIT_DURING_WORK[1]);
     String dateTimeFormat = cmd.getOptionValue(DATETIME_FORMAT[1]);
+    String user = cmd.getOptionValue(USER[1]);
+    String password = cmd.getOptionValue(PASSWORD[1]);
 
     if (actionType == null) {
       throw new MissingArgumentException("actionType should be [" + String.join("|", ActionType.getNames()) + "]");
@@ -118,6 +122,12 @@ public class ConfigFactory {
 
     if (dateTimeFormat != null) {
       c.setDateTimeFormat(dateTimeFormat);
+    }
+
+    if (user != null && password != null) {
+      c.setUser(user);
+      c.setPassword(password);
+      c.setHasCredentials(true);
     }
 
     logger.info("Current configuration " + c);
