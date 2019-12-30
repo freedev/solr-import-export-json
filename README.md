@@ -27,25 +27,42 @@ Now you're ready.
 This is the list of command line parameters.
 
 
-     usage: myapp [-a <arg>] [-d] [-D] [-f <arg>] [-h] [-k <arg>] [-o <arg>]
-        [-s <arg>] [-S <arg>]
-     solr-import-export-json
-
-     -a,--actionType <arg>    action type [import|export|backup|restore]
-     -d,--deleteAll           delete all documents before import
-     -D,--dryRun              dry run test
-     -f,--filterQuery <arg>   filter Query during export
-     -h,--help                help
-     -k,--uniqueKey <arg>     specify unique key for deep paging
-     -o,--output <arg>        output file
-     -s,--solrUrl <arg>       solr url
-     -S,--skipFields <arg>    comma separated fields list to skip during
-                              export/import, this field accepts start and end
-                              wildcard *. So you can specify skip all fields
-                              starting with name_*
-
-
-
+    usage: myapp [-a <arg>] [-b <arg>] [-c <arg>] [-d] [-D] [-f <arg>] [-F
+           <arg>] [-h] [-i <arg>] [-k <arg>] [-o <arg>] [-p <arg>] [-s <arg>]
+           [-S <arg>] [-u <arg>] [-x <arg>]
+    solr-import-export-json
+    
+     -a,--actionType <arg>           action type
+                                     [import|export|backup|restore]
+     -b,--blockSize <arg>            block size (default 5000 documents)
+     -c,--commitDuringImport <arg>   Commit progress after specified number of
+                                     docs. If not specified, whole work will
+                                     be committed.
+     -d,--deleteAll                  delete all documents before import
+     -D,--dryRun                     dry run test
+     -f,--filterQuery <arg>          filter Query during export
+     -F,--dateTimeFormat <arg>       set custom DateTime format (default
+                                     YYYY-MM-dd'T'HH:mm:sss'Z' )
+     -h,--help                       help
+     -i,--includeFields <arg>        simple comma separated fields list to be
+                                     used during export. if not specified all
+                                     the existing fields are used
+     -k,--uniqueKey <arg>            specify unique key for deep paging
+     -o,--output <arg>               output file
+     -p,--password <arg>             basic auth password
+     -s,--solrUrl <arg>              solr url -
+                                     http://localhost:8983/solr/collection_nam
+                                     e
+     -S,--skipFields <arg>           comma separated fields list to skip
+                                     during export/import, this field list
+                                     accepts for each field prefix/suffix a
+                                     wildcard *. So you can specify skip all
+                                     fields starting with name_*
+     -u,--user <arg>                 basic auth username
+     -x,--skipCount <arg>            Number of documents to be skipped when
+                                     loading from file. Useful when an error
+                                     occurs, so loading can continue from last
+                                     successful save.
 
 ### Real life examples
 

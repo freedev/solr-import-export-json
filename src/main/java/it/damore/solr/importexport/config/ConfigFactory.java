@@ -183,6 +183,8 @@ public class ConfigFactory {
                          "Number of documents to be skipped when loading from file. Useful when an error occurs, " + "so loading can continue from last successful save." + " ");
     cliOptions.addOption(COMMIT_DURING_WORK[0], COMMIT_DURING_WORK[1], true, "Commit progress after specified number of docs. If not specified, " + "whole work will be committed.");
     cliOptions.addOption(DATETIME_FORMAT[0], DATETIME_FORMAT[1], true, "set custom DateTime format (default " + CommandLineConfig.DEFAULT_DATETIME_FORMAT + " )");
+    cliOptions.addOption(USER[0], USER[1], true, "basic auth username");
+    cliOptions.addOption(PASSWORD[0], PASSWORD[1], true, "basic auth password");
     cliOptions.addOption(HELP[0], HELP[1], false, "help");
     CommandLineParser parser = new DefaultParser();
     CommandLine cmd = parser.parse(cliOptions, args);
