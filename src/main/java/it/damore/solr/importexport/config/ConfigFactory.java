@@ -24,6 +24,7 @@ public class ConfigFactory {
   private static final String[] BLOCK_SIZE         = new String[] {"b", "blockSize"};
   private static final String[] SKIP_DOCS          = new String[] {"x", "skipCount"};
   private static final String[] COMMIT_DURING_WORK = new String[] {"c", "commitDuringImport"};
+  private static final String[] DISABLE_CURSORS    = new String[] {"D", "disableCursors"};
   private static final String[] SOLR_URL           = new String[] {"s", "solrUrl"};
   private static final String[] ACTION_TYPE        = new String[] {"a", "actionType"};
   private static final String[] OUTPUT             = new String[] {"o", "output"};
@@ -54,6 +55,7 @@ public class ConfigFactory {
     String filterQuery = cmd.getOptionValue(FILTER_QUERY[1]);
     String uniqueKey = cmd.getOptionValue(UNIQUE_KEY[1]);
     Boolean deleteAll = cmd.hasOption(DELETE_ALL[1]);
+    Boolean disableCursors = cmd.hasOption(DISABLE_CURSORS[1]);
     Boolean dryRun = cmd.hasOption(DRY_RUN[1]);
     String actionType = cmd.getOptionValue(ACTION_TYPE[1]);
     String blockSize = cmd.getOptionValue(BLOCK_SIZE[1]);
@@ -98,6 +100,8 @@ public class ConfigFactory {
     c.setFilterQuery(filterQuery);
 
     c.setDeleteAll(deleteAll);
+
+    c.setDisableCursors(disableCursors);
 
     c.setDryRun(dryRun);
     if (skipCount != null) {
@@ -157,6 +161,7 @@ public class ConfigFactory {
     cliOptions.addOption(ACTION_TYPE[0], ACTION_TYPE[1], true, "action type [" + String.join("|", ActionType.getNames()) + "]");
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before import");
+    cliOptions.addOption(DISABLE_CURSORS[0], DISABLE_CURSORS[1], false, "disable Solr cursors while reading");
     cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during export");
     cliOptions.addOption(UNIQUE_KEY[0], UNIQUE_KEY[1], true, "specify unique key for deep paging");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");

@@ -344,12 +344,23 @@ public class App {
       try (PrintWriter pw = new PrintWriter(outputFile)) {
         solrQuery.setRows(config.getBlockSize());
         boolean done = false;
+        boolean disableCursors = config.getDisableCursors();
+        if (disableCursors) {
+          logger.warn("ATTENTION: you have disabled Solr Cursors, using standard pagination");
+        }
+        int page = 0;
+        QueryResponse rsp;
         while (!done) {
-          solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
-          QueryResponse rsp = client.query(solrQuery);
+          if (!disableCursors) {
+            solrQuery.set(CursorMarkParams.CURSOR_MARK_PARAM, cursorMark);
+          } else {
+            solrQuery.setStart(page * config.getBlockSize());
+          }
+          rsp = client.query(solrQuery);
           String nextCursorMark = rsp.getNextCursorMark();
-          if (nextCursorMark == null) {
-            logger.warn("ATTENTION: you're dealing with a old version of Solr which does not support cursors");
+          if (nextCursorMark == null && !disableCursors) {
+            disableCursors = true;
+            logger.warn("ATTENTION: you're dealing with a old version of Solr which does not support cursors, using standard pagination");
           }
 
           SolrDocumentList results = rsp.getResults();
@@ -375,10 +386,12 @@ public class App {
             }
             pw.write("\n");
           }
-          if (nextCursorMark == null || cursorMark.equals(nextCursorMark)) {
+          if (!disableCursors && cursorMark.equals(nextCursorMark)) {
             done = true;
           } else {
             logger.info("reading " + results.size() + " documents (" + incrementCounter(results.size()) + ")");
+            done = (results.size() == 0);
+            page++;
           }
 
           cursorMark = nextCursorMark;

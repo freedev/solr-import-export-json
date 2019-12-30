@@ -62,6 +62,7 @@ public class CommandLineConfig {
   private String solrUrl;
   private String fileName;
   private Boolean deleteAll;
+  private Boolean disableCursors;
   private Set<SolrField> skipFieldSet = Collections.emptySet();
   private Set<SolrField> includeFieldSet = Collections.emptySet();
   private String filterQuery;
@@ -246,14 +247,31 @@ public class CommandLineConfig {
     this.commitAfter = commitAfter;
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
-  @Override
-  public String toString()
-  {
-    return String.format("CommandLineConfig [actionType=%s, solrUrl=%s, fileName=%s, deleteAll=%s, skipFieldsSet=%s, filterQuery=%s, uniqueKey=%s, dryRun=%s, blockSize=%s, dateTimeFormat=%s]",
-                         actionType, solrUrl, fileName, deleteAll, skipFieldSet, filterQuery, uniqueKey, dryRun, blockSize, dateTimeFormat);
+  public Boolean getDisableCursors() {
+    return disableCursors;
   }
 
+  public void setDisableCursors(Boolean disableCursors) {
+    this.disableCursors = disableCursors;
+  }
+
+  @Override
+  public String toString() {
+    return "CommandLineConfig{" +
+            "actionType=" + actionType +
+            ", solrUrl='" + solrUrl + '\'' +
+            ", fileName='" + fileName + '\'' +
+            ", deleteAll=" + deleteAll +
+            ", disableCursors=" + disableCursors +
+            ", skipFieldSet=" + skipFieldSet +
+            ", includeFieldSet=" + includeFieldSet +
+            ", filterQuery='" + filterQuery + '\'' +
+            ", uniqueKey='" + uniqueKey + '\'' +
+            ", dryRun=" + dryRun +
+            ", skipCount=" + skipCount +
+            ", commitAfter=" + commitAfter +
+            ", blockSize=" + blockSize +
+            ", dateTimeFormat='" + dateTimeFormat + '\'' +
+            '}';
+  }
 }
