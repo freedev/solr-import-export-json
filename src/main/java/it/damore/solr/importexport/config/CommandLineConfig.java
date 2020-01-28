@@ -62,7 +62,7 @@ public class CommandLineConfig {
   private String solrUrl;
   private String user;
   private String password;
-  private Boolean hasCredentials;
+  private Boolean hasCredentials = false;
   private String fileName;
   private Boolean deleteAll;
   private Boolean disableCursors;
