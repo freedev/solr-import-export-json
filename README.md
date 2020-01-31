@@ -26,15 +26,15 @@ Now you're ready.
 
 This is the list of command line parameters.
 
-
-    usage: myapp [-a <arg>] [-b <arg>] [-c <arg>] [-d] [-D] [-f <arg>] [-F
-           <arg>] [-h] [-i <arg>] [-k <arg>] [-o <arg>] [-p <arg>] [-s <arg>]
-           [-S <arg>] [-u <arg>] [-x <arg>]
+    usage: myapp [-a <arg>] [-b <arg>] [-C] [-c <arg>] [-d] [-D] [-f <arg>]
+           [-F <arg>] [-h] [-i <arg>] [-k <arg>] [-o <arg>] [-p <arg>] [-s
+           <arg>] [-S <arg>] [-u <arg>] [-x <arg>]
     solr-import-export-json
     
      -a,--actionType <arg>           action type
                                      [import|export|backup|restore]
      -b,--blockSize <arg>            block size (default 5000 documents)
+     -C,--disableCursors             disable Solr cursors while reading
      -c,--commitDuringImport <arg>   Commit progress after specified number of
                                      docs. If not specified, whole work will
                                      be committed.

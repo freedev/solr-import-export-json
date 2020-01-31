@@ -24,7 +24,7 @@ public class ConfigFactory {
   private static final String[] BLOCK_SIZE         = new String[] {"b", "blockSize"};
   private static final String[] SKIP_DOCS          = new String[] {"x", "skipCount"};
   private static final String[] COMMIT_DURING_WORK = new String[] {"c", "commitDuringImport"};
-  private static final String[] DISABLE_CURSORS    = new String[] {"D", "disableCursors"};
+  private static final String[] DISABLE_CURSORS    = new String[] {"C", "disableCursors"};
   private static final String[] SOLR_URL           = new String[] {"s", "solrUrl"};
   private static final String[] ACTION_TYPE        = new String[] {"a", "actionType"};
   private static final String[] OUTPUT             = new String[] {"o", "output"};
