@@ -42,7 +42,7 @@ This is the list of command line parameters.
      -D,--dryRun                     dry run test
      -f,--filterQuery <arg>          filter Query during export
      -F,--dateTimeFormat <arg>       set custom DateTime format (default
-                                     YYYY-MM-dd'T'HH:mm:sss'Z' )
+                                     yyyy-MM-dd'T'HH:mm:ss.SSS'Z')
      -h,--help                       help
      -i,--includeFields <arg>        simple comma separated fields list to be
                                      used during export. if not specified all
