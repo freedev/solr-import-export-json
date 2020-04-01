@@ -339,7 +339,7 @@ public class App {
                 boolean done = false;
                 boolean disableCursors = config.getDisableCursors();
                 if (disableCursors) {
-                    logger.warn("ATTENTION: you have disabled Solr Cursors, using standard pagination");
+                    logger.warn("WARNING: you have disabled Solr Cursors, using standard pagination");
                 }
                 int page = 0;
                 QueryResponse rsp;
@@ -353,7 +353,7 @@ public class App {
                     String nextCursorMark = rsp.getNextCursorMark();
                     if (nextCursorMark == null && !disableCursors) {
                         disableCursors = true;
-                        logger.warn("ATTENTION: you're dealing with a old version of Solr which does not support cursors, using standard pagination");
+                        logger.warn("WARNING: you're dealing with a old version of Solr which does not support cursors, using standard pagination");
                     }
 
                     SolrDocumentList results = rsp.getResults();
