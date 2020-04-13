@@ -70,9 +70,18 @@
                   <filter>
                         <artifact>*:*</artifact>
                         <excludes>
+                           <exclude>META-INF/services/org.eclipse.jetty.http.HttpFieldPreEncoder</exclude>
+                           <exclude>META-INF/io.netty.versions.properties</exclude>
+                           <exclude>META-INF/DEPENDENCIES</exclude>
+                           <exclude>META-INF/LICENSE</exclude>
+                           <exclude>META-INF/NOTICE</exclude>
+                           <exclude>**/*.txt</exclude>
+                           <exclude>**/*.html</exclude>
                            <exclude>META-INF/*.SF</exclude>
+                           <exclude>META-INF/*.MF</exclude>
                            <exclude>META-INF/*.DSA</exclude>
                            <exclude>META-INF/*.RSA</exclude>
+                           <exclude>module-info.class</exclude>
                         </excludes>
                   </filter>
                </filters>
