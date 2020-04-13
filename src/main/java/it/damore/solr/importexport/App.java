@@ -10,6 +10,12 @@ import it.damore.solr.importexport.config.ConfigFactory;
 import it.damore.solr.importexport.config.SolrField;
 import it.damore.solr.importexport.config.SolrField.MatchType;
 import org.apache.commons.cli.ParseException;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -105,7 +111,19 @@ public class App {
             readUniqueKeyFromSolrSchema();
         }
 
+        CredentialsProvider provider = new BasicCredentialsProvider();
+        if (config.hasCredentials()) {
+            UsernamePasswordCredentials credentials
+                    = new UsernamePasswordCredentials(config.getUser(), config.getPassword());
+            provider.setCredentials(AuthScope.ANY, credentials);
+        }
+
+        HttpClient httpClient = HttpClientBuilder.create()
+                                             .setDefaultCredentialsProvider(provider)
+                                             .build();
+
         try (HttpSolrClient client = new HttpSolrClient.Builder().withBaseSolrUrl(config.getSolrUrl())
+                                                                 .withHttpClient(httpClient)
                                                                  .build()) {
 
             try {
@@ -320,11 +338,7 @@ public class App {
         objectMapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true);
 
         QueryRequest req = new QueryRequest(solrQuery);
-
-        if (config.hasCredentials()) {
-          req.setBasicAuthCredentials(config.getUser(), config.getPassword());
-        }
-
+        
         QueryResponse r = req.process(client);
 
         long nDocuments = r.getResults()
