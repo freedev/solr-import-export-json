@@ -1,7 +1,6 @@
 package it.damore.solr.importexport;
 
 import java.io.IOException;
-import java.net.http.HttpRequest;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
