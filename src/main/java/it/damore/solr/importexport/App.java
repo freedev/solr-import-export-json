@@ -1,14 +1,27 @@
 package it.damore.solr.importexport;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import it.damore.solr.importexport.config.CommandLineConfig;
-import it.damore.solr.importexport.config.ConfigFactory;
-import it.damore.solr.importexport.config.SolrField;
-import it.damore.solr.importexport.config.SolrField.MatchType;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import org.apache.commons.cli.ParseException;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -29,17 +42,16 @@ import org.apache.solr.common.params.CursorMarkParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import it.damore.solr.importexport.config.CommandLineConfig;
+import it.damore.solr.importexport.config.ConfigFactory;
+import it.damore.solr.importexport.config.SolrField;
+import it.damore.solr.importexport.config.SolrField.MatchType;
 
 //@formatter:off
 /*
@@ -119,8 +131,9 @@ public class App {
         }
 
         HttpClient httpClient = HttpClientBuilder.create()
-                                             .setDefaultCredentialsProvider(provider)
-                                             .build();
+                    .addInterceptorFirst(new PreemptiveAuthInterceptor())
+                    .setDefaultCredentialsProvider(provider)
+                    .build();
 
         try (HttpSolrClient client = new HttpSolrClient.Builder().withBaseSolrUrl(config.getSolrUrl())
                                                                  .withHttpClient(httpClient)
