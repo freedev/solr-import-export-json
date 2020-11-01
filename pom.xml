@@ -18,15 +18,14 @@
 			<url>https://maven.restlet.talend.com</url>
 		</repository>
 	</repositories>
-
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<solr.version>8.5.0</solr.version>
-		<jackson-databind.version>[2.9.9,)</jackson-databind.version>
-		<maven-shade-plugin.version>3.2.2</maven-shade-plugin.version>
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<commons-cli.version>1.4</commons-cli.version>
-		<commons-codec.version>1.14</commons-codec.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <solr.version>8.6.3</solr.version>
+    <jackson-databind.version>[2.9.9,)</jackson-databind.version>
+    <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <commons-cli.version>1.4</commons-cli.version>
+    <commons-codec.version>1.15</commons-codec.version>
 	</properties>
 	<build>
 		<resources>
@@ -97,7 +96,6 @@
 					</filters>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 
@@ -134,7 +132,7 @@
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.moxy</artifactId>
-			<version>2.7.6</version>
+			<version>2.7.7</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -146,19 +144,17 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson-databind.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.6.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-test-framework</artifactId>
-			<version>${solr.version}</version>
-			<scope>test</scope>
-		</dependency>
-
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-api</artifactId>
+         <version>5.7.0</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.solr</groupId>
+         <artifactId>solr-test-framework</artifactId>
+         <version>${solr.version}</version>
+         <scope>test</scope>
+      </dependency>
 	</dependencies>
 </project>
