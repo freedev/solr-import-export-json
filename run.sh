@@ -2,7 +2,7 @@
 
 PARAMS=""
 
-if [ "A$@" == "A" ]
+if [ -z "$1" ]
 then
   PARAMS="--help"
 fi
