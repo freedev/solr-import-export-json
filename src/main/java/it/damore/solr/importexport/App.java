@@ -123,17 +123,18 @@ public class App {
             readUniqueKeyFromSolrSchema();
         }
 
-        CredentialsProvider provider = new BasicCredentialsProvider();
+        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+
         if (config.hasCredentials()) {
+            CredentialsProvider provider = new BasicCredentialsProvider();
             UsernamePasswordCredentials credentials
                     = new UsernamePasswordCredentials(config.getUser(), config.getPassword());
             provider.setCredentials(AuthScope.ANY, credentials);
+            httpClientBuilder = httpClientBuilder.addInterceptorFirst(new PreemptiveAuthInterceptor())
+                                                 .setDefaultCredentialsProvider(provider);
         }
 
-        HttpClient httpClient = HttpClientBuilder.create()
-                    .addInterceptorFirst(new PreemptiveAuthInterceptor())
-                    .setDefaultCredentialsProvider(provider)
-                    .build();
+        HttpClient httpClient = httpClientBuilder.build();
 
         try (HttpSolrClient client = new HttpSolrClient.Builder().withBaseSolrUrl(config.getSolrUrl())
                                                                  .withHttpClient(httpClient)
