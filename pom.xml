@@ -20,7 +20,7 @@
 	</repositories>
 	<properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <solr.version>8.8.2</solr.version>
+    <solr.version>8.9.0</solr.version>
     <jackson-databind.version>[2.9.9,)</jackson-databind.version>
     <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
