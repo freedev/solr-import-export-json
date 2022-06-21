@@ -19,13 +19,21 @@
 		</repository>
 	</repositories>
 	<properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <solr.version>9.0.0</solr.version>
-    <jackson-databind.version>[2.9.9,)</jackson-databind.version>
-    <maven-shade-plugin.version>3.3.0</maven-shade-plugin.version>
-    <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-    <commons-cli.version>1.5.0</commons-cli.version>
-    <commons-codec.version>1.15</commons-codec.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<solr.version>9.0.0</solr.version>
+		<jackson-databind.version>[2.9.9,)</jackson-databind.version>
+		<maven-shade-plugin.version>3.3.0</maven-shade-plugin.version>
+		<maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
+		<commons-cli.version>1.5.0</commons-cli.version>
+		<commons-codec.version>1.15</commons-codec.version>
+		<!--
+			The minimum java version for Solr 9.0.0 is Java 11
+			If you want use Solr 8.x you can still use Java 11
+			because it can be used with Java 1.8 or higher.
+		-->
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<maven.compiler.release>11</maven.compiler.release>
 	</properties>
 	<build>
 		<resources>
@@ -48,8 +56,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
 					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
