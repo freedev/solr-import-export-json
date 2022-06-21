@@ -8,13 +8,10 @@ Please report issues at https://github.com/freedev/solr-import-export-json/issue
 
 ### Install
 
-To execute this console app you need to satisfy few dependency (java 8, git, maven), if you are a java developer probably you already have everything, on the other hand if not if you have Linux execute the following commands:
+To execute this console app you need to satisfy few dependency (java 11, git, maven), if you are a java developer probably you already have everything, on the other hand if not if you have Linux execute the following commands:
 
-    sudo apt-get update
-    sudo add-apt-repository ppa:openjdk-r/ppa
-    sudo apt-get update
-    sudo apt-get install openjdk-8-jdk
-    sudo apt-get install maven
+    sudo apt update
+    sudo apt install git openjdk-11-jdk maven
   
     git clone https://github.com/freedev/solr-import-export-json.git
     cd solr-import-export-json
