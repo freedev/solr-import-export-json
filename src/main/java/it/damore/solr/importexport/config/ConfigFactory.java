@@ -1,5 +1,7 @@
 package it.damore.solr.importexport.config;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -54,7 +56,7 @@ public class ConfigFactory {
     String skipFields = cmd.getOptionValue(SKIP_FIELDS[1]);
     String includeFields = cmd.getOptionValue(INCLUDE_FIELDS[1]);
     String file = cmd.getOptionValue(OUTPUT[1]);
-    String filterQuery = cmd.getOptionValue(FILTER_QUERY[1]);
+    List<String> filterQueries = Optional.ofNullable(cmd.getOptionValues(FILTER_QUERY[1])).map(List::of).orElse(List.of());
     String uniqueKey = cmd.getOptionValue(UNIQUE_KEY[1]);
     Boolean deleteAll = cmd.hasOption(DELETE_ALL[1]);
     Boolean disableCursors = cmd.hasOption(DISABLE_CURSORS[1]);
@@ -101,7 +103,7 @@ public class ConfigFactory {
       throw new MissingArgumentException("actionType should be [" + String.join("|", ActionType.getNames()) + "]");
     }
 
-    c.setFilterQuery(filterQuery);
+    c.setFilterQueries(filterQueries);
 
     c.setDeleteAll(deleteAll);
 
@@ -172,7 +174,7 @@ public class ConfigFactory {
     cliOptions.addOption(OUTPUT[0], OUTPUT[1], true, "output file");
     cliOptions.addOption(DELETE_ALL[0], DELETE_ALL[1], false, "delete all documents before import");
     cliOptions.addOption(DISABLE_CURSORS[0], DISABLE_CURSORS[1], false, "disable Solr cursors while reading");
-    cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "filter Query during export");
+    cliOptions.addOption(FILTER_QUERY[0], FILTER_QUERY[1], true, "add one or more filter Query during export");
     cliOptions.addOption(UNIQUE_KEY[0], UNIQUE_KEY[1], true, "specify unique key for deep paging");
     cliOptions.addOption(DRY_RUN[0], DRY_RUN[1], false, "dry run test");
     cliOptions.addOption(INCLUDE_FIELDS[0], INCLUDE_FIELDS[1], true, "simple comma separated fields list to be used during export. if not specified all the existing fields are used");

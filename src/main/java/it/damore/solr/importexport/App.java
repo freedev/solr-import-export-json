@@ -13,12 +13,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -331,9 +327,11 @@ public class App {
         solrQuery.setTimeAllowed(-1);
         solrQuery.setQuery("*:*");
         solrQuery.setFields("*");
-        if (config.getFilterQuery() != null) {
-            solrQuery.addFilterQuery(config.getFilterQuery());
-        }
+        Optional.ofNullable(config.getFilterQueries())
+                .filter(l -> !l.isEmpty())
+                .ifPresent(l -> {
+                    l.forEach(fq -> solrQuery.addFilterQuery(fq) );
+                });
         if (!includeFieldsEquals.isEmpty()) {
             solrQuery.setFields(includeFieldsEquals.stream()
                                                    .map(f -> f.getText())

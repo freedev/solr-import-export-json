@@ -68,7 +68,7 @@ public class CommandLineConfig {
   private Boolean disableCursors;
   private Set<SolrField> skipFieldSet = Collections.emptySet();
   private Set<SolrField> includeFieldSet = Collections.emptySet();
-  private String filterQuery;
+  private List<String> filterQueries;
   private String uniqueKey;
   private Boolean dryRun;
   private long skipCount;
@@ -135,19 +135,18 @@ public class CommandLineConfig {
 
   
   /**
-   * @return the filterQuery
+   * @return the filterQueries
    */
-  public String getFilterQuery() {
-    return filterQuery;
+  public List<String> getFilterQueries() {
+    return filterQueries;
   }
 
   /**
-   * @param filterQuery the filterQuery to set
+   * @param filterQueries the filterQueries to set
    */
-  public void setFilterQuery(String filterQuery) {
-    this.filterQuery = filterQuery;
+  public void setFilterQueries(List<String> filterQueries) {
+    this.filterQueries = filterQueries;
   }
-
   
   /**
    * @return the deleteAll
@@ -292,7 +291,7 @@ public class CommandLineConfig {
             ", disableCursors=" + disableCursors +
             ", skipFieldSet=" + skipFieldSet +
             ", includeFieldSet=" + includeFieldSet +
-            ", filterQuery='" + filterQuery + '\'' +
+            ", filterQueries='" + filterQueries + '\'' +
             ", uniqueKey='" + uniqueKey + '\'' +
             ", dryRun=" + dryRun +
             ", skipCount=" + skipCount +

@@ -71,9 +71,9 @@ import documents from json
 
     ./run.sh -s http://localhost:8983/solr/collection -a import -o /tmp/collection.json 
 
-export part of documents, like adding a `fq`  Solr parameter to the export
+export part of documents, like adding a few `fq`  Solr parameters to the export
 
-     ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --filterQuery field:value
+     ./run.sh -s http://localhost:8983/solr/collection -a export -o /tmp/collection.json --filterQuery field1:A  --filterQuery field2:B
 
 import documents from json but first delete all documents in the collection
 
