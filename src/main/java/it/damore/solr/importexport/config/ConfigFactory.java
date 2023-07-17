@@ -74,7 +74,11 @@ public class ConfigFactory {
     }
 
     if (solrUrl == null) {
-      throw new MissingArgumentException("solrUrl missing");
+      throw new MissingArgumentException("missing solrUrl");
+    }
+
+    if (file == null) {
+      throw new MissingArgumentException("missing input/output json line file (.jsonl)");
     }
 
     CommandLineConfig c = new CommandLineConfig();
