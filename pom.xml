@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<solr.version>9.5.0</solr.version>
 		<jackson-databind.version>[2.9.9,)</jackson-databind.version>
-		<maven-shade-plugin.version>3.5.1</maven-shade-plugin.version>
+		<maven-shade-plugin.version>3.5.2</maven-shade-plugin.version>
 		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
 		<commons-cli.version>1.6.0</commons-cli.version>
 		<commons-codec.version>1.16.1</commons-codec.version>
