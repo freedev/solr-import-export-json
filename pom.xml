@@ -24,7 +24,7 @@
 		<jackson-databind.version>[2.9.9,)</jackson-databind.version>
 		<maven-shade-plugin.version>3.6.0</maven-shade-plugin.version>
 		<maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
-		<commons-cli.version>1.9.0</commons-cli.version>
+		<commons-cli.version>1.10.0</commons-cli.version>
 		<commons-codec.version>1.18.0</commons-codec.version>
 		<!--
 			The minimum java version for Solr 9.0.0 is Java 11
