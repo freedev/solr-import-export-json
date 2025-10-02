@@ -31,9 +31,9 @@
 			If you want use Solr 8.x you can still use Java 11
 			because it can be used with Java 1.8 or higher.
 		-->
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-		<maven.compiler.release>11</maven.compiler.release>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.release>17</maven.compiler.release>
 	</properties>
 	<build>
 		<resources>
