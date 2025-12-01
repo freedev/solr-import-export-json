@@ -15,6 +15,10 @@ jobs:
       fail-fast: false
       matrix:
         language: ['java']
+        include:
+          # Analyzes Java code directly from the codebase without a build
+          - language: java-kotlin
+            build-mode: none # analyzes Java only
 
     steps:
       - uses: actions/checkout@v1
