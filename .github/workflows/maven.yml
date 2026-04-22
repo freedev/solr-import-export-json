@@ -7,11 +7,38 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      security-events: write
+      actions: read
+    # ...
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['java']
+        include:
+          # Analyzes Java code directly from the codebase without a build
+          - language: java-kotlin
+            build-mode: none # analyzes Java only
+
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up JDK 17
-      uses: actions/setup-java@v1
-      with:
-        java-version: 17
-    - name: Build with Maven
-      run: mvn -B --no-transfer-progress package --file pom.xml
+      - uses: actions/checkout@v1
+
+      - uses: actions/checkout@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: Build with Maven
+        run: mvn -B --no-transfer-progress package --file pom.xml
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: ${{ matrix.language }}
+  
+      # (Optional) Autobuild or manual build steps for compiled languages
+  
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+

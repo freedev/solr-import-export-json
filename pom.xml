@@ -20,12 +20,17 @@
 	</repositories>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<solr.version>9.9.0</solr.version>
+		<solr.version>9.10.0</solr.version>
 		<jackson-databind.version>2.18.3</jackson-databind.version>
 		<maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
 		<maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
-		<commons-cli.version>1.10.0</commons-cli.version>
-		<commons-codec.version>1.19.0</commons-codec.version>
+		<commons-cli.version>1.11.0</commons-cli.version>
+		<commons-codec.version>1.20.0</commons-codec.version>
+		<!--
+			The minimum java version for Solr 9.0.0 is Java 11
+			If you want use Solr 8.x you can still use Java 11
+			because it can be used with Java 1.8 or higher.
+		-->
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 		<maven.compiler.release>17</maven.compiler.release>
@@ -104,7 +109,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.5.19</version>
+			<version>1.5.32</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.solr</groupId>
@@ -133,7 +138,7 @@
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.moxy</artifactId>
-			<version>4.0.8</version>
+			<version>5.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>
@@ -158,7 +163,7 @@
       <dependency>
          <groupId>org.junit.jupiter</groupId>
          <artifactId>junit-jupiter-api</artifactId>
-         <version>6.0.0</version>
+         <version>6.0.1</version>
          <scope>test</scope>
       </dependency>
       <dependency>
