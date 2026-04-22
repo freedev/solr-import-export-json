@@ -8,10 +8,24 @@ Please report issues at https://github.com/freedev/solr-import-export-json/issue
 
 ### Install
 
-To execute this console app you need to satisfy few dependency (java 11, git, maven), if you are a java developer probably you already have everything, on the other hand if not if you have Linux execute the following commands:
+#### Download a pre-built release (recommended)
+
+Pre-built releases are available on the [GitHub Releases page](https://github.com/freedev/solr-import-export-json/releases).
+Each release is tagged with the app version and the Solr version it was built against (e.g. `v1.1-solr9.10.0`), so you can pick the one that matches your Solr installation.
+
+You only need Java 17 or later installed to run it:
 
     sudo apt update
-    sudo apt install git openjdk-11-jdk maven
+    sudo apt install openjdk-17-jdk
+
+Download the JAR for your Solr version and you're ready.
+
+#### Build from source
+
+To build from source you need Java 17, git and Maven. On Linux:
+
+    sudo apt update
+    sudo apt install git openjdk-17-jdk maven
   
     git clone https://github.com/freedev/solr-import-export-json.git
     cd solr-import-export-json
