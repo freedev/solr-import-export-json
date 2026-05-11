@@ -21,7 +21,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<solr.version>9.10.0</solr.version>
-		<jackson-databind.version>2.21</jackson-databind.version>
+		<jackson-bom.version>2.21.3</jackson-bom.version>
 		<maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
 		<maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
 		<commons-cli.version>1.11.0</commons-cli.version>
@@ -105,6 +105,18 @@
 		</plugins>
 	</build>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.fasterxml.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson-bom.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -148,17 +160,14 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>${jackson-databind.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson-databind.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>${jackson-databind.version}</version>
 		</dependency>
       <dependency>
          <groupId>org.junit.jupiter</groupId>
